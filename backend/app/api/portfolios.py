@@ -1,0 +1,33 @@
+from fastapi import APIRouter, Depends, HTTPException
+from sqlalchemy.orm import Session
+
+from app.db import get_db
+from app.schemas.portfolio import CreatePortfolioRequest, Portfolio, PortfolioSummary
+from app.services import portfolio_service, summary_service
+from app.services.errors import NotFoundError, ValidationError
+
+router = APIRouter(tags=["portfolios"])
+
+
+@router.post("/portfolios", response_model=Portfolio, status_code=201)
+def create_portfolio(request: CreatePortfolioRequest, db: Session = Depends(get_db)):
+    try:
+        portfolio = portfolio_service.create_portfolio(
+            db, request.name, request.currency
+        )
+    except ValidationError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+    return Portfolio(
+        portfolioId=portfolio.portfolioId,
+        name=portfolio.name,
+        currency=portfolio.currency,
+    )
+
+
+@router.get("/portfolios/{portfolioId}/summary", response_model=PortfolioSummary)
+def get_portfolio_summary(portfolioId: str, db: Session = Depends(get_db)):
+    try:
+        summary = summary_service.get_portfolio_summary(db, portfolioId)
+    except NotFoundError as exc:
+        raise HTTPException(status_code=404, detail=str(exc)) from exc
+    return PortfolioSummary(**summary)

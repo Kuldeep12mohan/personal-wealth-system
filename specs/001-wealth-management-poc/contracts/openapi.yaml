@@ -1,0 +1,352 @@
+openapi: 3.0.3
+info:
+  title: Personal Wealth Management System POC API
+  version: "1.0.0"
+  description: >
+    6 endpoints only, mirroring the source specification
+    (docs/Personal_Wealth_Management-SpecKit_SDD_POC.pdf) exactly, with
+    rounding/default rules resolved during /speckit-clarify (see spec.md
+    Clarifications). This contract is the authoritative backend interface;
+    the 2-screen frontend (FR-022–FR-025) consumes it without altering it.
+servers:
+  - url: /api
+paths:
+  /portfolios:
+    post:
+      operationId: createPortfolio
+      summary: Create a portfolio (FR-001, FR-002, FR-003)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreatePortfolioRequest'
+      responses:
+        '201':
+          description: Portfolio created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Portfolio'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+
+  /portfolios/{portfolioId}/holdings:
+    post:
+      operationId: addHolding
+      summary: Add an investment holding to a portfolio (FR-004–FR-007, FR-006a)
+      parameters:
+        - $ref: '#/components/parameters/PortfolioId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddHoldingRequest'
+      responses:
+        '201':
+          description: Holding created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Holding'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    get:
+      operationId: listHoldings
+      summary: View all holdings in a portfolio (FR-016)
+      parameters:
+        - $ref: '#/components/parameters/PortfolioId'
+      responses:
+        '200':
+          description: Holdings for the portfolio
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/HoldingView'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /holdings/{holdingId}/transactions:
+    post:
+      operationId: recordTransaction
+      summary: Record a BUY or SELL transaction (FR-008–FR-012a)
+      parameters:
+        - $ref: '#/components/parameters/HoldingId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RecordTransactionRequest'
+      responses:
+        '201':
+          description: Transaction recorded
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Transaction'
+        '400':
+          description: >
+            Validation failure — includes non-positive quantity/price,
+            unsupported type, or a SELL quantity exceeding the currently
+            held quantity (FR-011).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /holdings/{holdingId}/price:
+    put:
+      operationId: updateCurrentPrice
+      summary: Manually update a holding's current price (FR-013–FR-015)
+      parameters:
+        - $ref: '#/components/parameters/HoldingId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdatePriceRequest'
+      responses:
+        '200':
+          description: Current price updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PriceUpdateResult'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /portfolios/{portfolioId}/summary:
+    get:
+      operationId: getPortfolioSummary
+      summary: View overall portfolio summary (FR-017, FR-018)
+      parameters:
+        - $ref: '#/components/parameters/PortfolioId'
+      responses:
+        '200':
+          description: Portfolio summary
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PortfolioSummary'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+components:
+  parameters:
+    PortfolioId:
+      name: portfolioId
+      in: path
+      required: true
+      schema:
+        type: string
+        example: PORT-10001
+    HoldingId:
+      name: holdingId
+      in: path
+      required: true
+      schema:
+        type: string
+        example: HOLD-20001
+
+  responses:
+    BadRequest:
+      description: Validation error (missing/invalid field)
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    NotFound:
+      description: Referenced portfolio or holding does not exist
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+
+  schemas:
+    Error:
+      type: object
+      required: [error]
+      properties:
+        error:
+          type: string
+          example: "Sell quantity exceeds available holding quantity"
+
+    CurrencyCode:
+      type: string
+      enum: [INR, USD]
+
+    InvestmentType:
+      type: string
+      enum: [STOCK, MUTUAL_FUND, ETF]
+
+    TransactionType:
+      type: string
+      enum: [BUY, SELL]
+
+    CreatePortfolioRequest:
+      type: object
+      required: [name, currency]
+      properties:
+        name:
+          type: string
+          example: My Investments
+        currency:
+          $ref: '#/components/schemas/CurrencyCode'
+
+    Portfolio:
+      type: object
+      properties:
+        portfolioId:
+          type: string
+          example: PORT-10001
+        name:
+          type: string
+        currency:
+          $ref: '#/components/schemas/CurrencyCode'
+
+    AddHoldingRequest:
+      type: object
+      required: [name, symbol, type]
+      properties:
+        name:
+          type: string
+          example: ABC Bank
+        symbol:
+          type: string
+          example: ABCBANK
+        type:
+          $ref: '#/components/schemas/InvestmentType'
+
+    Holding:
+      type: object
+      properties:
+        holdingId:
+          type: string
+          example: HOLD-20001
+        portfolioId:
+          type: string
+          example: PORT-10001
+        name:
+          type: string
+        symbol:
+          type: string
+        type:
+          $ref: '#/components/schemas/InvestmentType'
+        currentPrice:
+          type: number
+          format: double
+          description: Defaults to 0 until explicitly updated (FR-006a)
+          example: 0
+
+    HoldingView:
+      allOf:
+        - $ref: '#/components/schemas/Holding'
+        - type: object
+          properties:
+            quantity:
+              type: number
+              format: double
+              description: Derived (FR-012), rounded to 4 decimal places
+            averagePrice:
+              type: number
+              format: double
+              description: Derived from BUY transactions only (FR-012a), rounded to 2 decimal places
+            currentValue:
+              type: number
+              format: double
+              description: quantity × currentPrice (FR-016), rounded to 2 decimal places
+
+    RecordTransactionRequest:
+      type: object
+      required: [type, quantity, price, transactionDate]
+      properties:
+        type:
+          $ref: '#/components/schemas/TransactionType'
+        quantity:
+          type: number
+          format: double
+          example: 10
+        price:
+          type: number
+          format: double
+          example: 500
+        transactionDate:
+          type: string
+          format: date
+          example: "2026-09-01"
+
+    Transaction:
+      type: object
+      properties:
+        transactionId:
+          type: string
+          example: TXN-30001
+        holdingId:
+          type: string
+          example: HOLD-20001
+        type:
+          $ref: '#/components/schemas/TransactionType'
+        quantity:
+          type: number
+          format: double
+        price:
+          type: number
+          format: double
+        value:
+          type: number
+          format: double
+          description: quantity × price (FR-009), rounded to 2 decimal places
+
+    UpdatePriceRequest:
+      type: object
+      required: [currentPrice]
+      properties:
+        currentPrice:
+          type: number
+          format: double
+          example: 550
+
+    PriceUpdateResult:
+      type: object
+      properties:
+        holdingId:
+          type: string
+          example: HOLD-20001
+        currentPrice:
+          type: number
+          format: double
+          example: 550
+
+    PortfolioSummary:
+      type: object
+      properties:
+        portfolioId:
+          type: string
+          example: PORT-10001
+        totalInvested:
+          type: number
+          format: double
+          description: Sum of BUY values − sum of SELL values (FR-018)
+        currentValue:
+          type: number
+          format: double
+          description: Sum of (holding quantity × current price) (FR-018)
+        profitLoss:
+          type: number
+          format: double
+          description: currentValue − totalInvested (FR-018)
+        profitLossPercentage:
+          type: number
+          format: double
+          description: (profitLoss ÷ totalInvested) × 100 (FR-018)

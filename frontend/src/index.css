@@ -1,0 +1,864 @@
+/* ============================================================
+   Design tokens
+   ============================================================ */
+:root {
+  /* Spacing scale */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+  --space-7: 48px;
+
+  /* Radii */
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+
+  /* Shadows */
+  --shadow-sm: 0 1px 2px rgba(16, 24, 40, 0.06), 0 1px 1px rgba(16, 24, 40, 0.04);
+  --shadow-md: 0 4px 12px rgba(16, 24, 40, 0.08), 0 2px 4px rgba(16, 24, 40, 0.04);
+
+  /* Colors */
+  --color-bg: #f4f6f9;
+  --color-surface: #ffffff;
+  --color-surface-muted: #f8fafc;
+  --color-border: #e2e6ec;
+  --color-border-strong: #cbd2dc;
+
+  --color-text: #14181f;
+  --color-text-muted: #5b6472;
+  --color-text-faint: #8992a0;
+
+  --color-primary: #1f5f8b;
+  --color-primary-dark: #164667;
+  --color-primary-soft: #e8f1f8;
+
+  --color-success: #0a7d2c;
+  --color-success-bg: #e7f6ec;
+  --color-success-border: #b8e3c4;
+
+  --color-danger: #b3261e;
+  --color-danger-bg: #fbeae9;
+  --color-danger-border: #f0c1bd;
+
+  --color-neutral-bg: #eef0f3;
+
+  --font-sans: system-ui, -apple-system, "Segoe UI", Arial, sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-sans);
+  background: var(--color-bg);
+  color: var(--color-text);
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3, h4, p {
+  margin: 0;
+}
+
+/* ============================================================
+   App shell
+   ============================================================ */
+.app {
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: var(--space-5) var(--space-4) var(--space-7);
+}
+
+.app-nav {
+  display: flex;
+  gap: var(--space-2);
+  margin-bottom: var(--space-5);
+  padding: var(--space-2);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+  flex-wrap: wrap;
+}
+
+.app-nav button {
+  padding: var(--space-2) var(--space-4);
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--color-text-muted);
+  cursor: pointer;
+  border-radius: var(--radius-sm);
+  font-size: 14px;
+  font-weight: 600;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.app-nav button:hover:not(:disabled) {
+  background: var(--color-surface-muted);
+}
+
+.app-nav button.active {
+  background: var(--color-primary);
+  color: #fff;
+}
+
+.app-nav button:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.app-nav button:focus-visible,
+button:focus-visible,
+input:focus-visible,
+select:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+/* ============================================================
+   Page header
+   ============================================================ */
+.page-header {
+  margin-bottom: var(--space-5);
+}
+
+.page-title {
+  font-size: 26px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--color-text);
+}
+
+.page-subtitle {
+  margin-top: var(--space-1);
+  font-size: 14px;
+  color: var(--color-text-muted);
+}
+
+.portfolio-id-field {
+  margin-bottom: var(--space-5);
+  max-width: 360px;
+}
+
+/* ============================================================
+   Card / section
+   ============================================================ */
+.card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  padding: var(--space-5);
+  margin-bottom: var(--space-5);
+}
+
+.card-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-3);
+  margin-bottom: var(--space-4);
+  flex-wrap: wrap;
+}
+
+.card-title {
+  font-size: 17px;
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+.card-subtitle {
+  font-size: 13px;
+  color: var(--color-text-muted);
+}
+
+.card-step {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 999px;
+  background: var(--color-primary-soft);
+  color: var(--color-primary-dark);
+  font-size: 13px;
+  font-weight: 700;
+  margin-right: var(--space-2);
+}
+
+/* ============================================================
+   Forms
+   ============================================================ */
+.form-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-4);
+  align-items: flex-end;
+}
+
+.form-field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-text-muted);
+  min-width: 160px;
+}
+
+.form-field--grow {
+  flex: 1 1 200px;
+}
+
+.form-input,
+.form-select {
+  padding: 9px var(--space-3);
+  font-size: 14px;
+  font-family: var(--font-sans);
+  color: var(--color-text);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-sm);
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.form-input:focus,
+.form-select:focus {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px var(--color-primary-soft);
+  outline: none;
+}
+
+.form-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+/* Segmented BUY / SELL selector (native select, styled + color coded) */
+.type-select {
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.type-select--buy {
+  color: var(--color-success);
+  border-color: var(--color-success-border);
+  background: var(--color-success-bg);
+}
+
+.type-select--sell {
+  color: var(--color-danger);
+  border-color: var(--color-danger-border);
+  background: var(--color-danger-bg);
+}
+
+.type-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  padding: 2px var(--space-2);
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+.type-badge--buy {
+  color: var(--color-success);
+  background: var(--color-success-bg);
+  border: 1px solid var(--color-success-border);
+}
+
+.type-badge--sell {
+  color: var(--color-danger);
+  background: var(--color-danger-bg);
+  border: 1px solid var(--color-danger-border);
+}
+
+/* ============================================================
+   Buttons
+   ============================================================ */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  padding: 9px var(--space-4);
+  font-size: 14px;
+  font-weight: 600;
+  border-radius: var(--radius-sm);
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: background-color 0.15s ease, border-color 0.15s ease, opacity 0.15s ease;
+  white-space: nowrap;
+}
+
+.btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.btn-primary {
+  background: var(--color-primary);
+  color: #fff;
+}
+
+.btn-primary:hover:not(:disabled) {
+  background: var(--color-primary-dark);
+}
+
+.btn-secondary {
+  background: var(--color-surface);
+  color: var(--color-text);
+  border-color: var(--color-border-strong);
+}
+
+.btn-secondary:hover:not(:disabled) {
+  background: var(--color-surface-muted);
+}
+
+.btn-sm {
+  padding: 6px var(--space-3);
+  font-size: 13px;
+}
+
+/* ============================================================
+   Status text (loading / success / error / empty)
+   ============================================================ */
+.status-text {
+  font-size: 13px;
+  margin: var(--space-2) 0 0;
+}
+
+.error-text {
+  color: var(--color-danger);
+  font-size: 13px;
+  margin: var(--space-2) 0 0;
+  padding: var(--space-2) var(--space-3);
+  background: var(--color-danger-bg);
+  border: 1px solid var(--color-danger-border);
+  border-radius: var(--radius-sm);
+}
+
+.success-text {
+  color: var(--color-success);
+  font-size: 13px;
+  margin: var(--space-2) 0 0;
+  padding: var(--space-2) var(--space-3);
+  background: var(--color-success-bg);
+  border: 1px solid var(--color-success-border);
+  border-radius: var(--radius-sm);
+}
+
+.loading-text {
+  color: var(--color-text-muted);
+  font-size: 13px;
+  margin: var(--space-2) 0 0;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.spinner {
+  width: 13px;
+  height: 13px;
+  border: 2px solid var(--color-border-strong);
+  border-top-color: var(--color-primary);
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+  flex: 0 0 auto;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.empty-state {
+  text-align: center;
+  padding: var(--space-7) var(--space-4);
+  color: var(--color-text-muted);
+}
+
+.empty-state__title {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--color-text);
+  margin-bottom: var(--space-1);
+}
+
+.empty-state__hint {
+  font-size: 13px;
+}
+
+/* ============================================================
+   Summary cards
+   ============================================================ */
+.summary-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--space-4);
+}
+
+.summary-card {
+  background: var(--color-surface-muted);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: var(--space-4);
+}
+
+.summary-card__label {
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--color-text-muted);
+  margin-bottom: var(--space-1);
+}
+
+.summary-card__value {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--color-text);
+}
+
+.value-positive {
+  color: var(--color-success);
+}
+
+.value-negative {
+  color: var(--color-danger);
+}
+
+.value-neutral {
+  color: var(--color-text);
+}
+
+/* ============================================================
+   Tables
+   ============================================================ */
+.table-wrapper {
+  overflow-x: auto;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.table th,
+.table td {
+  border-bottom: 1px solid var(--color-border);
+  padding: var(--space-3);
+  text-align: left;
+  font-size: 14px;
+  white-space: nowrap;
+}
+
+.table th {
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: var(--color-text-muted);
+}
+
+.table tbody tr:hover {
+  background: var(--color-surface-muted);
+}
+
+.table td.numeric,
+.table th.numeric {
+  text-align: right;
+}
+
+/* ============================================================
+   Action bar / collapsible panels
+   ============================================================ */
+.action-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin-bottom: var(--space-4);
+}
+
+.holding-picker {
+  margin-bottom: var(--space-4);
+  max-width: 360px;
+}
+
+.action-panels {
+  display: grid;
+  gap: var(--space-4);
+}
+
+@media (min-width: 720px) {
+  .action-panels {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.subpanel {
+  background: var(--color-surface-muted);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: var(--space-4);
+}
+
+.subpanel-title {
+  font-size: 14px;
+  font-weight: 700;
+  margin-bottom: var(--space-3);
+}
+
+/* ============================================================
+   Typography scale (used across both screens for consistency)
+   ============================================================ */
+.text-section-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--color-text);
+}
+
+.text-label {
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--color-text-muted);
+}
+
+.text-value {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--color-text);
+}
+
+.text-supporting {
+  font-size: 13px;
+  color: var(--color-text-muted);
+}
+
+/* ============================================================
+   Step progression (Portfolio Setup screen)
+   ============================================================ */
+.step-flow {
+  position: relative;
+}
+
+.step-card {
+  position: relative;
+  transition: opacity 0.15s ease;
+}
+
+.step-card + .step-card {
+  margin-top: 0;
+}
+
+.step-connector {
+  width: 2px;
+  height: var(--space-5);
+  margin: 0 0 0 32px;
+  background: var(--color-border-strong);
+}
+
+.step-card--locked {
+  background: var(--color-surface-muted);
+  opacity: 0.85;
+}
+
+.card-step--locked {
+  background: var(--color-neutral-bg);
+  color: var(--color-text-faint);
+}
+
+.step-hint {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: 13px;
+  color: var(--color-text-muted);
+  background: var(--color-neutral-bg);
+  border: 1px dashed var(--color-border-strong);
+  border-radius: var(--radius-sm);
+  padding: var(--space-3) var(--space-4);
+}
+
+/* ============================================================
+   Banners (success / info feedback, in-place — no browser alerts)
+   ============================================================ */
+.banner {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-2);
+  font-size: 13px;
+  margin: var(--space-3) 0 0;
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-sm);
+  border: 1px solid transparent;
+}
+
+.banner-success {
+  color: var(--color-success);
+  background: var(--color-success-bg);
+  border-color: var(--color-success-border);
+  font-weight: 600;
+}
+
+.banner-icon {
+  flex: 0 0 auto;
+  font-weight: 700;
+}
+
+/* ============================================================
+   BUY/SELL segmented control
+   (native <select> kept for a11y/testability, styled to read as
+   a two-state toggle rather than a plain dropdown)
+   ============================================================ */
+.segmented-select-wrap {
+  position: relative;
+}
+
+.type-select {
+  font-weight: 700;
+  cursor: pointer;
+  min-width: 140px;
+  border-width: 2px;
+  font-size: 15px;
+  padding: 9px var(--space-4);
+}
+
+.segmented-hint {
+  margin-top: var(--space-1);
+  font-size: 12px;
+  color: var(--color-text-faint);
+}
+
+/* ============================================================
+   Transaction preview (live, client-side-only arithmetic)
+   ============================================================ */
+.tx-preview {
+  margin-top: var(--space-1);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-text);
+  background: var(--color-surface-muted);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  padding: var(--space-2) var(--space-3);
+}
+
+.tx-preview__label {
+  font-weight: 500;
+  color: var(--color-text-muted);
+  margin-right: var(--space-1);
+}
+
+/* ============================================================
+   Allocation bar (plain CSS width-based indicator)
+   ============================================================ */
+.allocation-cell {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 90px;
+}
+
+.allocation-bar {
+  width: 100%;
+  height: 6px;
+  border-radius: 999px;
+  background: var(--color-neutral-bg);
+  overflow: hidden;
+}
+
+.allocation-bar__fill {
+  height: 100%;
+  background: var(--color-primary);
+  border-radius: 999px;
+  transition: width 0.2s ease;
+}
+
+/* ============================================================
+   "Not set" badge (currentPrice defaults to 0, FR-006a)
+   ============================================================ */
+.badge-unset {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px var(--space-2);
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--color-text-faint);
+  background: var(--color-neutral-bg);
+  border: 1px solid var(--color-border-strong);
+}
+
+/* ============================================================
+   Row-level compact actions (holdings table)
+   ============================================================ */
+.row-actions {
+  display: flex;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+}
+
+.btn-compact {
+  padding: 4px var(--space-2);
+  font-size: 12px;
+  font-weight: 600;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--color-border-strong);
+  background: var(--color-surface);
+  color: var(--color-primary-dark);
+  cursor: pointer;
+  transition: background-color 0.15s ease, border-color 0.15s ease;
+  white-space: nowrap;
+}
+
+.btn-compact:hover {
+  background: var(--color-primary-soft);
+  border-color: var(--color-primary);
+}
+
+.btn-compact:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+/* ============================================================
+   Dashboard header (name/currency + primary jump actions)
+   ============================================================ */
+.dashboard-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-4);
+  flex-wrap: wrap;
+}
+
+.dashboard-header__meta {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+}
+
+.currency-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px var(--space-2);
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--color-primary-dark);
+  background: var(--color-primary-soft);
+}
+
+.header-actions {
+  display: flex;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+}
+
+/* ============================================================
+   Responsive
+   ============================================================ */
+@media (max-width: 720px) {
+  .app {
+    padding: var(--space-4) var(--space-3) var(--space-6);
+  }
+
+  .summary-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .form-grid {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .form-field {
+    min-width: 0;
+  }
+
+  .card {
+    padding: var(--space-4);
+  }
+}
+
+@media (max-width: 480px) {
+  .summary-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Holdings table -> stacked cards below 640px (no horizontal scroll) */
+@media (max-width: 640px) {
+  .table--responsive thead {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+  }
+
+  .table--responsive,
+  .table--responsive tbody,
+  .table--responsive tr,
+  .table--responsive td {
+    display: block;
+    width: 100%;
+  }
+
+  .table--responsive tr {
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    padding: var(--space-3);
+    margin-bottom: var(--space-3);
+  }
+
+  .table--responsive td {
+    border-bottom: none;
+    padding: var(--space-1) 0;
+    text-align: right;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: var(--space-3);
+    white-space: normal;
+  }
+
+  .table--responsive td::before {
+    content: attr(data-label);
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    color: var(--color-text-muted);
+    text-align: left;
+  }
+
+  .table--responsive td.numeric {
+    text-align: right;
+  }
+
+  .dashboard-header {
+    flex-direction: column;
+  }
+
+  .header-actions {
+    width: 100%;
+  }
+
+  .header-actions .btn {
+    flex: 1 1 auto;
+  }
+}
