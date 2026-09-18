@@ -41,31 +41,31 @@ export default function AddInvestmentForm({ portfolioId, onAdded }: Props) {
 
   return (
     <div>
-      <form className="form-grid" onSubmit={handleSubmit}>
-        <label className="form-field form-field--grow">
+      <form className="flex flex-wrap items-end gap-4" onSubmit={handleSubmit}>
+        <label className="flex min-w-[160px] flex-1 flex-col gap-1 text-[13px] font-semibold text-[var(--color-text-muted)]">
           Investment name
           <input
-            className="form-input"
+            className="rounded-lg border border-[var(--color-border-strong)] bg-[var(--color-surface)] px-3 py-[9px] font-sans text-sm text-[var(--color-text)] transition-[border-color,box-shadow] duration-150 focus:border-[var(--color-primary)] focus:shadow-[0_0_0_3px_var(--color-primary-soft)] focus:outline-none"
             value={name}
             onChange={(e) => setName(e.target.value)}
             placeholder="e.g. ABC Bank"
             aria-label="Investment name"
           />
         </label>
-        <label className="form-field">
+        <label className="flex min-w-[160px] flex-col gap-1 text-[13px] font-semibold text-[var(--color-text-muted)]">
           Symbol
           <input
-            className="form-input"
+            className="rounded-lg border border-[var(--color-border-strong)] bg-[var(--color-surface)] px-3 py-[9px] font-sans text-sm text-[var(--color-text)] transition-[border-color,box-shadow] duration-150 focus:border-[var(--color-primary)] focus:shadow-[0_0_0_3px_var(--color-primary-soft)] focus:outline-none"
             value={symbol}
             onChange={(e) => setSymbol(e.target.value)}
             placeholder="e.g. ABCBANK"
             aria-label="Symbol"
           />
         </label>
-        <label className="form-field">
+        <label className="flex min-w-[160px] flex-col gap-1 text-[13px] font-semibold text-[var(--color-text-muted)]">
           Type
           <select
-            className="form-select"
+            className="rounded-lg border border-[var(--color-border-strong)] bg-[var(--color-surface)] px-3 py-[9px] font-sans text-sm text-[var(--color-text)] transition-[border-color,box-shadow] duration-150 focus:border-[var(--color-primary)] focus:shadow-[0_0_0_3px_var(--color-primary-soft)] focus:outline-none"
             value={type}
             onChange={(e) => setType(e.target.value as InvestmentType)}
             aria-label="Type"
@@ -77,22 +77,36 @@ export default function AddInvestmentForm({ portfolioId, onAdded }: Props) {
             ))}
           </select>
         </label>
-        <div className="form-actions">
-          <button className="btn btn-primary" type="submit" disabled={isSubmitting}>
+        <div className="flex items-center gap-3">
+          <button
+            className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-lg border border-transparent bg-[var(--color-primary)] px-4 py-[9px] text-sm font-semibold text-white transition-colors duration-150 enabled:hover:bg-[var(--color-primary-dark)] disabled:cursor-not-allowed disabled:opacity-60"
+            type="submit"
+            disabled={isSubmitting}
+          >
             {isSubmitting ? "Adding..." : "Add Investment"}
           </button>
           {isSubmitting && (
-            <span className="loading-text" role="status">
-              <span className="spinner" aria-hidden="true" />
+            <span
+              className="mt-2 inline-flex items-center gap-2 text-[13px] text-[var(--color-text-muted)]"
+              role="status"
+            >
+              <span
+                className="h-[13px] w-[13px] shrink-0 animate-spin rounded-full border-2 border-[var(--color-border-strong)] border-t-[var(--color-primary)]"
+                aria-hidden="true"
+              />
               Adding investment...
             </span>
           )}
         </div>
       </form>
-      {error && <p className="error-text">{error}</p>}
+      {error && (
+        <p className="mt-2 rounded-lg border border-[var(--color-danger-border)] bg-[var(--color-danger-bg)] px-3 py-2 text-[13px] text-[var(--color-danger)]">
+          {error}
+        </p>
+      )}
       {created && (
-        <p className="banner banner-success">
-          <span className="banner-icon" aria-hidden="true">
+        <p className="mt-3 flex items-start gap-2 rounded-lg border border-[var(--color-success-border)] bg-[var(--color-success-bg)] px-4 py-3 text-[13px] font-semibold text-[var(--color-success)]">
+          <span className="shrink-0 font-bold" aria-hidden="true">
             ✓
           </span>
           Holding created: {created.holdingId} ({created.name})

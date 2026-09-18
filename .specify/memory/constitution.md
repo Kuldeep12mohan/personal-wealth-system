@@ -1,19 +1,24 @@
 <!--
 Sync Impact Report
 ==================
-Version change: 1.0.0 → 1.1.0
-Rationale: MINOR bump — the UI scope constraint is materially redefined
-(4 screens → maximum 2 screens, with explicit screen composition) while
-no principle is removed or backward-incompatibly redefined. No backend
-API, data model, business rule, or calculation is affected.
+Version change: 1.1.0 → 1.2.0
+Rationale: MINOR bump — the frontend styling boundary is materially
+redefined (plain CSS → Tailwind CSS utilities) in response to an
+approved feature request (specs/003-tailwind-ui-modernization/spec.md).
+No principle is removed, and no backend API, data model, business rule,
+or calculation is affected; the change is scoped to the frontend styling
+methodology only, and the "no additional frameworks" boundary is
+narrowed to name Tailwind CSS as the sole permitted exception rather
+than being lifted generally.
 
 Modified principles:
-- I. Simplicity First — "4 UI screens" → "a maximum of 2 UI screens"
+- IX. Minimal Architecture, Dependencies & Infrastructure — frontend
+  stack changed from "React + TypeScript + Vite + plain CSS" to
+  "React + TypeScript + Vite + Tailwind CSS", with Tailwind CSS named as
+  the one explicit exception to the "no additional frameworks" rule.
 
-Added sections:
-- "UI Scope" bullet added under Technology & Scope Boundaries, defining
-  the two consolidated screens (Portfolio Setup; Portfolio Dashboard) and
-  their contained actions/views.
+Added sections: none (Technology & Scope Boundaries' Frontend bullet
+updated in place; see Modified principles).
 
 Removed sections: none.
 
@@ -145,25 +150,31 @@ changes propagate through implementation.
 
 ### IX. Minimal Architecture, Dependencies & Infrastructure
 The project MUST use only the technology stack defined in the
-specification: React + TypeScript + Vite + plain CSS (frontend), FastAPI
-+ SQLAlchemy (backend), SQLite (database), Pytest + React Testing
-Library (tests). No additional frameworks, state-management libraries,
-ORMs, message queues, containers, CI/CD pipelines, cloud services, or
-microservices MAY be introduced. Anything listed in the specification's
-"Explicitly Out of Scope" section (authentication/SSO, real-time market
-data, brokerage/bank integrations, tax/capital-gains logic, notifications,
-cloud deployment, multi-user access control, advanced charts, etc.) MUST
-NOT be implemented, even if it would be "nice to have."
+specification: React + TypeScript + Vite + Tailwind CSS (frontend),
+FastAPI + SQLAlchemy (backend), SQLite (database), Pytest + React
+Testing Library (tests). Tailwind CSS is the one approved exception to
+an otherwise closed stack: no other additional frameworks, UI component
+libraries, state-management libraries, ORMs, message queues, containers,
+CI/CD pipelines, cloud services, or microservices MAY be introduced.
+Anything listed in the specification's "Explicitly Out of Scope" section
+(authentication/SSO, real-time market data, brokerage/bank integrations,
+tax/capital-gains logic, notifications, cloud deployment, multi-user
+access control, advanced charts, etc.) MUST NOT be implemented, even if
+it would be "nice to have."
 **Rationale**: The specification states the stack is "intentionally
 simple to minimize implementation and token overhead" and defines an
 explicit out-of-scope list; adding architecture or dependencies beyond
 this list changes what is being measured and risks missing the one-day
-implementation target.
+implementation target. Tailwind CSS was approved as a scoped, single
+exception (specs/003-tailwind-ui-modernization/spec.md) to allow a
+visual modernization pass without reopening the stack to general
+frontend framework additions.
 
 ## Technology & Scope Boundaries
 
-- **Frontend**: React, TypeScript, Vite, plain CSS — no additional UI
-  frameworks or component libraries.
+- **Frontend**: React, TypeScript, Vite, Tailwind CSS — Tailwind CSS is
+  the sole approved styling approach; no other additional UI frameworks
+  or component libraries may be introduced.
 - **Backend**: Python, FastAPI, SQLAlchemy.
 - **Database**: SQLite.
 - **Testing**: Pytest (backend), React Testing Library (frontend).
@@ -237,4 +248,4 @@ Consistency) before implementation begins. Any deviation MUST be
 justified explicitly in the relevant artifact (e.g., a "Complexity
 Justification" note in the plan) or the deviation MUST be removed.
 
-**Version**: 1.1.0 | **Ratified**: 2026-09-17 | **Last Amended**: 2026-09-17
+**Version**: 1.2.0 | **Ratified**: 2026-09-17 | **Last Amended**: 2026-09-18

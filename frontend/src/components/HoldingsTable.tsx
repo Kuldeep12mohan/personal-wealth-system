@@ -10,9 +10,9 @@ interface Props {
 }
 
 function plClass(value: number): string {
-  if (value > 0) return "value-positive";
-  if (value < 0) return "value-negative";
-  return "value-neutral";
+  if (value > 0) return "text-[var(--color-success)]";
+  if (value < 0) return "text-[var(--color-danger)]";
+  return "text-[var(--color-text)]";
 }
 
 /**
@@ -47,9 +47,11 @@ export default function HoldingsTable({
 }: Props) {
   if (holdings.length === 0) {
     return (
-      <div className="empty-state">
-        <div className="empty-state__title">No holdings yet</div>
-        <p className="empty-state__hint">
+      <div className="px-4 py-12 text-center text-[var(--color-text-muted)]">
+        <div className="mb-1 text-base font-semibold text-[var(--color-text)]">
+          No holdings yet
+        </div>
+        <p className="text-[13px]">
           Add an investment above to start tracking it in this portfolio.
         </p>
       </div>
@@ -57,20 +59,40 @@ export default function HoldingsTable({
   }
 
   return (
-    <div className="table-wrapper">
-      <table className="table table--responsive">
+    <div className="overflow-x-auto">
+      <table className="table table--responsive w-full border-collapse">
         <thead>
           <tr>
-            <th>Name</th>
-            <th>Symbol</th>
-            <th>Type</th>
-            <th className="numeric">Quantity</th>
-            <th className="numeric">Avg Price</th>
-            <th className="numeric">Current Price</th>
-            <th className="numeric">Current Value</th>
-            <th className="numeric">P/L</th>
-            <th className="numeric">P/L %</th>
-            <th>Actions</th>
+            <th className="border-b border-[var(--color-border)] p-3 text-left text-xs font-semibold uppercase tracking-wide text-[var(--color-text-muted)]">
+              Name
+            </th>
+            <th className="border-b border-[var(--color-border)] p-3 text-left text-xs font-semibold uppercase tracking-wide text-[var(--color-text-muted)]">
+              Symbol
+            </th>
+            <th className="border-b border-[var(--color-border)] p-3 text-left text-xs font-semibold uppercase tracking-wide text-[var(--color-text-muted)]">
+              Type
+            </th>
+            <th className="border-b border-[var(--color-border)] p-3 text-right text-xs font-semibold uppercase tracking-wide text-[var(--color-text-muted)]">
+              Quantity
+            </th>
+            <th className="border-b border-[var(--color-border)] p-3 text-right text-xs font-semibold uppercase tracking-wide text-[var(--color-text-muted)]">
+              Avg Price
+            </th>
+            <th className="border-b border-[var(--color-border)] p-3 text-right text-xs font-semibold uppercase tracking-wide text-[var(--color-text-muted)]">
+              Current Price
+            </th>
+            <th className="border-b border-[var(--color-border)] p-3 text-right text-xs font-semibold uppercase tracking-wide text-[var(--color-text-muted)]">
+              Current Value
+            </th>
+            <th className="border-b border-[var(--color-border)] p-3 text-right text-xs font-semibold uppercase tracking-wide text-[var(--color-text-muted)]">
+              P/L
+            </th>
+            <th className="border-b border-[var(--color-border)] p-3 text-right text-xs font-semibold uppercase tracking-wide text-[var(--color-text-muted)]">
+              P/L %
+            </th>
+            <th className="border-b border-[var(--color-border)] p-3 text-left text-xs font-semibold uppercase tracking-wide text-[var(--color-text-muted)]">
+              Actions
+            </th>
           </tr>
         </thead>
         <tbody>
@@ -81,41 +103,76 @@ export default function HoldingsTable({
             const plWord = profitLoss > 0 ? "Gain" : profitLoss < 0 ? "Loss" : "Flat";
 
             return (
-              <tr key={h.holdingId}>
-                <td data-label="Name">{h.name}</td>
-                <td data-label="Symbol">{h.symbol}</td>
-                <td data-label="Type">{h.type}</td>
-                <td className="numeric" data-label="Quantity">
+              <tr key={h.holdingId} className="hover:bg-[var(--color-surface-muted)]">
+                <td
+                  className="border-b border-[var(--color-border)] p-3 text-sm whitespace-nowrap"
+                  data-label="Name"
+                >
+                  {h.name}
+                </td>
+                <td
+                  className="border-b border-[var(--color-border)] p-3 text-sm whitespace-nowrap"
+                  data-label="Symbol"
+                >
+                  {h.symbol}
+                </td>
+                <td
+                  className="border-b border-[var(--color-border)] p-3 text-sm whitespace-nowrap"
+                  data-label="Type"
+                >
+                  {h.type}
+                </td>
+                <td
+                  className="border-b border-[var(--color-border)] p-3 text-right text-sm whitespace-nowrap"
+                  data-label="Quantity"
+                >
                   {h.quantity}
                 </td>
-                <td className="numeric" data-label="Avg Price">
+                <td
+                  className="border-b border-[var(--color-border)] p-3 text-right text-sm whitespace-nowrap"
+                  data-label="Avg Price"
+                >
                   {h.averagePrice}
                 </td>
-                <td className="numeric" data-label="Current Price">
+                <td
+                  className="border-b border-[var(--color-border)] p-3 text-right text-sm whitespace-nowrap"
+                  data-label="Current Price"
+                >
                   {h.currentPrice > 0 ? (
                     h.currentPrice
                   ) : (
-                    <span className="badge-unset">Not set</span>
+                    <span className="inline-flex items-center rounded-full border border-[var(--color-border-strong)] bg-[var(--color-neutral-bg)] px-2 py-0.5 text-[11px] font-semibold text-[var(--color-text-faint)]">
+                      Not set
+                    </span>
                   )}
                 </td>
-                <td className="numeric" data-label="Current Value">
+                <td
+                  className="border-b border-[var(--color-border)] p-3 text-right text-sm whitespace-nowrap"
+                  data-label="Current Value"
+                >
                   {h.currentValue}
-                  <span className="allocation-inline">
+                  <span className="ml-1 text-[0.85em] text-[var(--color-text-muted)]">
                     ({allocationPercentage.toFixed(1)}%)
                   </span>
                 </td>
-                <td className={`numeric ${className}`} data-label="P/L">
+                <td
+                  className={`border-b border-[var(--color-border)] p-3 text-right text-sm whitespace-nowrap ${className}`}
+                  data-label="P/L"
+                >
                   {plWord} {signed(profitLoss)}
                 </td>
-                <td className={`numeric ${className}`} data-label="P/L %">
+                <td
+                  className={`border-b border-[var(--color-border)] p-3 text-right text-sm whitespace-nowrap ${className}`}
+                  data-label="P/L %"
+                >
                   {plWord} {signed(profitLossPercentage)}%
                 </td>
-                <td data-label="Actions">
-                  <div className="row-actions">
+                <td className="border-b border-[var(--color-border)] p-3 text-sm" data-label="Actions">
+                  <div className="flex flex-wrap gap-2">
                     {onRecordTransaction && (
                       <button
                         type="button"
-                        className="btn-compact"
+                        className="cursor-pointer whitespace-nowrap rounded-lg border border-[var(--color-border-strong)] bg-[var(--color-surface)] px-2 py-1 text-xs font-semibold text-[var(--color-primary-dark)] transition-colors duration-150 hover:border-[var(--color-primary)] hover:bg-[var(--color-primary-soft)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-primary)]"
                         onClick={() => onRecordTransaction(h.holdingId)}
                         aria-label={`Record transaction for ${h.name}`}
                       >
@@ -125,7 +182,7 @@ export default function HoldingsTable({
                     {onUpdatePrice && (
                       <button
                         type="button"
-                        className="btn-compact"
+                        className="cursor-pointer whitespace-nowrap rounded-lg border border-[var(--color-border-strong)] bg-[var(--color-surface)] px-2 py-1 text-xs font-semibold text-[var(--color-primary-dark)] transition-colors duration-150 hover:border-[var(--color-primary)] hover:bg-[var(--color-primary-soft)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-primary)]"
                         onClick={() => onUpdatePrice(h.holdingId)}
                         aria-label={`Update price for ${h.name}`}
                       >

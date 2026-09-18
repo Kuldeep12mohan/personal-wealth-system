@@ -26,48 +26,60 @@ export default function PortfolioSetupPage({ onPortfolioCreated }: Props) {
   const hasPortfolio = !!portfolio;
   const hasHoldings = holdings.length > 0;
 
+  const cardBase =
+    "rounded-2xl border border-[var(--color-border)] bg-[var(--color-surface)] p-6 shadow-[var(--shadow-sm)] transition-opacity duration-150 max-[720px]:p-4";
+  const cardLocked = "bg-[var(--color-surface-muted)] opacity-[0.85]";
+  const cardStepBase =
+    "mr-2 inline-flex h-6 w-6 items-center justify-center rounded-full bg-[var(--color-primary-soft)] text-[13px] font-bold text-[var(--color-primary-dark)]";
+  const cardStepLocked = "bg-[var(--color-neutral-bg)] text-[var(--color-text-faint)]";
+
   return (
     <div>
-      <header className="page-header">
-        <h1 className="page-title">Portfolio Setup</h1>
-        <p className="page-subtitle">
+      <header className="mb-6">
+        <h1 className="text-[26px] font-bold tracking-tight text-[var(--color-text)]">
+          Portfolio Setup
+        </h1>
+        <p className="mt-1 text-sm text-[var(--color-text-muted)]">
           Follow the three steps below: create a portfolio, add an investment
           to it, then record a BUY or SELL transaction against that
           investment.
         </p>
       </header>
 
-      <div className="step-flow">
+      <div className="relative">
         {/* Step 1: Create Portfolio */}
-        <section className="card step-card">
-          <div className="card-header">
-            <h2 className="card-title">
-              <span className="card-step">1</span>
+        <section className={cardBase}>
+          <div className="mb-4 flex flex-wrap items-baseline justify-between gap-3">
+            <h2 className="text-[17px] font-semibold text-[var(--color-text)]">
+              <span className={cardStepBase}>1</span>
               Create Portfolio
             </h2>
-            <span className="card-subtitle">
+            <span className="text-[13px] text-[var(--color-text-muted)]">
               Start here — give your portfolio a name and currency.
             </span>
           </div>
           <CreatePortfolioForm onCreated={handleCreated} />
         </section>
 
-        <div className="step-connector" aria-hidden="true" />
+        <div
+          className="ml-8 h-6 w-0.5 bg-[var(--color-border-strong)]"
+          aria-hidden="true"
+        />
 
         {/* Step 2: Add Investment */}
-        <section className={`card step-card ${!hasPortfolio ? "step-card--locked" : ""}`}>
-          <div className="card-header">
-            <h2 className="card-title">
-              <span className={`card-step ${!hasPortfolio ? "card-step--locked" : ""}`}>2</span>
+        <section className={`${cardBase} ${!hasPortfolio ? cardLocked : ""}`}>
+          <div className="mb-4 flex flex-wrap items-baseline justify-between gap-3">
+            <h2 className="text-[17px] font-semibold text-[var(--color-text)]">
+              <span className={`${cardStepBase} ${!hasPortfolio ? cardStepLocked : ""}`}>2</span>
               Add Investment
             </h2>
             {hasPortfolio && (
-              <span className="card-subtitle">
+              <span className="text-[13px] text-[var(--color-text-muted)]">
                 Portfolio: {portfolio!.name} ({portfolio!.portfolioId})
               </span>
             )}
           </div>
-          <p className="card-subtitle" style={{ marginBottom: "var(--space-3)" }}>
+          <p className="mb-3 text-[13px] text-[var(--color-text-muted)]">
             Register a stock, mutual fund, or ETF you want to track.
           </p>
           {hasPortfolio ? (
@@ -79,29 +91,34 @@ export default function PortfolioSetupPage({ onPortfolioCreated }: Props) {
               }}
             />
           ) : (
-            <p className="step-hint">Create a portfolio first to unlock this step.</p>
+            <p className="inline-flex items-center gap-2 rounded-lg border border-dashed border-[var(--color-border-strong)] bg-[var(--color-neutral-bg)] px-4 py-3 text-[13px] text-[var(--color-text-muted)]">
+              Create a portfolio first to unlock this step.
+            </p>
           )}
         </section>
 
-        <div className="step-connector" aria-hidden="true" />
+        <div
+          className="ml-8 h-6 w-0.5 bg-[var(--color-border-strong)]"
+          aria-hidden="true"
+        />
 
         {/* Step 3: Record Transaction */}
-        <section className={`card step-card ${!hasHoldings ? "step-card--locked" : ""}`}>
-          <div className="card-header">
-            <h2 className="card-title">
-              <span className={`card-step ${!hasHoldings ? "card-step--locked" : ""}`}>3</span>
+        <section className={`${cardBase} ${!hasHoldings ? cardLocked : ""}`}>
+          <div className="mb-4 flex flex-wrap items-baseline justify-between gap-3">
+            <h2 className="text-[17px] font-semibold text-[var(--color-text)]">
+              <span className={`${cardStepBase} ${!hasHoldings ? cardStepLocked : ""}`}>3</span>
               Record Transaction
             </h2>
           </div>
-          <p className="card-subtitle" style={{ marginBottom: "var(--space-3)" }}>
+          <p className="mb-3 text-[13px] text-[var(--color-text-muted)]">
             Log a BUY or SELL against one of your investments.
           </p>
           {hasHoldings ? (
             <>
-              <label className="form-field holding-picker">
+              <label className="mb-4 flex max-w-[360px] min-w-[160px] flex-col gap-1 text-[13px] font-semibold text-[var(--color-text-muted)]">
                 Holding
                 <select
-                  className="form-select"
+                  className="rounded-lg border border-[var(--color-border-strong)] bg-[var(--color-surface)] px-3 py-[9px] font-sans text-sm text-[var(--color-text)] transition-[border-color,box-shadow] duration-150 focus:border-[var(--color-primary)] focus:shadow-[0_0_0_3px_var(--color-primary-soft)] focus:outline-none"
                   value={selectedHoldingId}
                   onChange={(e) => setSelectedHoldingId(e.target.value)}
                   aria-label="Select holding"
@@ -118,7 +135,7 @@ export default function PortfolioSetupPage({ onPortfolioCreated }: Props) {
               )}
             </>
           ) : (
-            <p className="step-hint">
+            <p className="inline-flex items-center gap-2 rounded-lg border border-dashed border-[var(--color-border-strong)] bg-[var(--color-neutral-bg)] px-4 py-3 text-[13px] text-[var(--color-text-muted)]">
               {hasPortfolio
                 ? "Add an investment first to unlock this step."
                 : "Create a portfolio and add an investment first to unlock this step."}

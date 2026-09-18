@@ -35,30 +35,44 @@ export default function UpdatePriceForm({ holdingId, onUpdated }: Props) {
 
   return (
     <div>
-      <form className="form-grid" onSubmit={handleSubmit}>
-        <label className="form-field form-field--grow">
+      <form className="flex flex-wrap items-end gap-4" onSubmit={handleSubmit}>
+        <label className="flex min-w-[160px] flex-1 flex-col gap-1 text-[13px] font-semibold text-[var(--color-text-muted)]">
           New current price
           <input
-            className="form-input"
+            className="rounded-lg border border-[var(--color-border-strong)] bg-[var(--color-surface)] px-3 py-[9px] font-sans text-sm text-[var(--color-text)] transition-[border-color,box-shadow] duration-150 focus:border-[var(--color-primary)] focus:shadow-[0_0_0_3px_var(--color-primary-soft)] focus:outline-none"
             value={currentPrice}
             onChange={(e) => setCurrentPrice(e.target.value)}
             placeholder="e.g. 550"
             aria-label={`Current price for ${holdingId}`}
           />
         </label>
-        <div className="form-actions">
-          <button className="btn btn-secondary" type="submit" disabled={isSubmitting}>
+        <div className="flex items-center gap-3">
+          <button
+            className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-lg border border-[var(--color-border-strong)] bg-[var(--color-surface)] px-4 py-[9px] text-sm font-semibold text-[var(--color-text)] transition-colors duration-150 enabled:hover:bg-[var(--color-surface-muted)] disabled:cursor-not-allowed disabled:opacity-60"
+            type="submit"
+            disabled={isSubmitting}
+          >
             {isSubmitting ? "Updating..." : "Update Price"}
           </button>
           {isSubmitting && (
-            <span className="loading-text" role="status">
-              <span className="spinner" aria-hidden="true" />
+            <span
+              className="mt-2 inline-flex items-center gap-2 text-[13px] text-[var(--color-text-muted)]"
+              role="status"
+            >
+              <span
+                className="h-[13px] w-[13px] shrink-0 animate-spin rounded-full border-2 border-[var(--color-border-strong)] border-t-[var(--color-primary)]"
+                aria-hidden="true"
+              />
               Updating price...
             </span>
           )}
         </div>
       </form>
-      {error && <p className="error-text">{error}</p>}
+      {error && (
+        <p className="mt-2 rounded-lg border border-[var(--color-danger-border)] bg-[var(--color-danger-bg)] px-3 py-2 text-[13px] text-[var(--color-danger)]">
+          {error}
+        </p>
+      )}
     </div>
   );
 }
