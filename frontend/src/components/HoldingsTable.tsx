@@ -70,7 +70,6 @@ export default function HoldingsTable({
             <th className="numeric">Current Value</th>
             <th className="numeric">P/L</th>
             <th className="numeric">P/L %</th>
-            <th className="numeric">Allocation %</th>
             <th>Actions</th>
           </tr>
         </thead>
@@ -80,7 +79,6 @@ export default function HoldingsTable({
               computeDerived(h, portfolioCurrentValue);
             const className = plClass(profitLoss);
             const plWord = profitLoss > 0 ? "Gain" : profitLoss < 0 ? "Loss" : "Flat";
-            const allocationWidth = Math.min(100, Math.max(0, allocationPercentage));
 
             return (
               <tr key={h.holdingId}>
@@ -102,23 +100,15 @@ export default function HoldingsTable({
                 </td>
                 <td className="numeric" data-label="Current Value">
                   {h.currentValue}
+                  <span className="allocation-inline">
+                    ({allocationPercentage.toFixed(1)}%)
+                  </span>
                 </td>
                 <td className={`numeric ${className}`} data-label="P/L">
                   {plWord} {signed(profitLoss)}
                 </td>
                 <td className={`numeric ${className}`} data-label="P/L %">
                   {plWord} {signed(profitLossPercentage)}%
-                </td>
-                <td className="numeric" data-label="Allocation %">
-                  <div className="allocation-cell">
-                    <span>{allocationPercentage.toFixed(2)}%</span>
-                    <span className="allocation-bar" aria-hidden="true">
-                      <span
-                        className="allocation-bar__fill"
-                        style={{ width: `${allocationWidth}%` }}
-                      />
-                    </span>
-                  </div>
                 </td>
                 <td data-label="Actions">
                   <div className="row-actions">
