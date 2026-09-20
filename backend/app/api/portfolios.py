@@ -24,6 +24,19 @@ def create_portfolio(request: CreatePortfolioRequest, db: Session = Depends(get_
     )
 
 
+@router.get("/portfolios", response_model=list[Portfolio])
+def list_portfolios(db: Session = Depends(get_db)):
+    portfolios = portfolio_service.list_portfolios(db)
+    return [
+        Portfolio(
+            portfolioId=portfolio.portfolioId,
+            name=portfolio.name,
+            currency=portfolio.currency,
+        )
+        for portfolio in portfolios
+    ]
+
+
 @router.get("/portfolios/{portfolioId}/summary", response_model=PortfolioSummary)
 def get_portfolio_summary(portfolioId: str, db: Session = Depends(get_db)):
     try:

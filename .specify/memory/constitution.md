@@ -1,24 +1,32 @@
 <!--
 Sync Impact Report
 ==================
-Version change: 1.1.0 → 1.2.0
-Rationale: MINOR bump — the frontend styling boundary is materially
-redefined (plain CSS → Tailwind CSS utilities) in response to an
-approved feature request (specs/003-tailwind-ui-modernization/spec.md).
-No principle is removed, and no backend API, data model, business rule,
-or calculation is affected; the change is scoped to the frontend styling
-methodology only, and the "no additional frameworks" boundary is
-narrowed to name Tailwind CSS as the sole permitted exception rather
-than being lifted generally.
+Version change: 1.2.0 → 1.3.0
+Rationale: MINOR bump — the fixed API-endpoint boundary is materially
+redefined (6 endpoints → 7 endpoints) in response to an approved feature
+request (specs/004-portfolio-switcher/spec.md, plan.md Complexity
+Tracking). No principle is removed; the change is scoped to naming one
+additional, already-clarified read-only endpoint (GET /portfolios) as
+approved, exactly as the Tailwind CSS styling exception was approved in
+v1.2.0. No data model, business rule, or calculation is affected, and no
+UI screen is added (the endpoint is consumed by a switcher control
+inside the existing 2-screen scope).
 
 Modified principles:
-- IX. Minimal Architecture, Dependencies & Infrastructure — frontend
-  stack changed from "React + TypeScript + Vite + plain CSS" to
-  "React + TypeScript + Vite + Tailwind CSS", with Tailwind CSS named as
-  the one explicit exception to the "no additional frameworks" rule.
+- I. Simplicity First — "6 APIs" changed to "7 APIs".
+- II. Maintainability Through Convention — rationale's "six endpoints"
+  changed to "seven endpoints".
+- V. API Contract Consistency — "The 6 REST endpoints" changed to "The 7
+  REST endpoints".
 
-Added sections: none (Technology & Scope Boundaries' Frontend bullet
-updated in place; see Modified principles).
+Modified sections:
+- Technology & Scope Boundaries — APIs bullet updated from "exactly the
+  six endpoints..." to enumerate the 7th endpoint (list all portfolios,
+  GET /portfolios), naming it as a scoped, approved exception mirroring
+  the Tailwind CSS precedent, and narrowing "new endpoints require a
+  specification update first" accordingly.
+
+Added sections: none.
 
 Removed sections: none.
 
@@ -37,9 +45,10 @@ Follow-up TODOs: none.
 
 ### I. Simplicity First
 The system MUST implement only what is described in
-`docs/Personal_Wealth_Management-SpecKit_SDD_POC.pdf`: 3 entities
-(Portfolio, Holding, Transaction), 6 APIs, a maximum of 2 UI screens, and
-one portfolio calculation model. Every design or implementation choice MUST favor the
+`docs/Personal_Wealth_Management-SpecKit_SDD_POC.pdf` plus approved
+incremental changes: 3 entities (Portfolio, Holding, Transaction), 7
+APIs, a maximum of 2 UI screens, and one portfolio calculation model.
+Every design or implementation choice MUST favor the
 smallest solution that satisfies the specification over a more general or
 "future-proof" one. When two approaches both satisfy a requirement, the
 one with fewer moving parts (fewer files, fewer layers, fewer
@@ -57,7 +66,7 @@ entities, fields, and endpoints MUST match the specification exactly
 (e.g. `portfolioId`, `holdingId`, `transactionId`, `currentValue`).
 Business logic (calculations, validation) MUST live in backend
 `services/`, never duplicated across API handlers or the frontend.
-**Rationale**: A small POC with three entities and six endpoints stays
+**Rationale**: A small POC with three entities and seven endpoints stays
 easy to extend and review only if naming and structure are predictable;
 divergent naming between spec, API, and code is the single biggest
 source of confusion in short-lived SDD experiments.
@@ -90,7 +99,7 @@ specification, and prevents calculation logic from silently drifting
 out of sync between client and server.
 
 ### V. API Contract Consistency
-The 6 REST endpoints, their request/response JSON shapes, field names,
+The 7 REST endpoints, their request/response JSON shapes, field names,
 and HTTP status codes (400, 404, 409) MUST match
 `docs/Personal_Wealth_Management-SpecKit_SDD_POC.pdf` exactly unless a
 change is introduced through the incremental-change process (Principle
@@ -182,10 +191,14 @@ frontend framework additions.
   Transaction — with a 1:N:N relationship as defined in the
   specification. No additional entities may be introduced without a
   specification change.
-- **APIs**: exactly the six endpoints defined in the specification
-  (create portfolio, add holding, record transaction, view holdings,
-  update current price, view portfolio summary). New endpoints require a
-  specification update first.
+- **APIs**: exactly the seven approved endpoints — the original six
+  defined in the specification (create portfolio, add holding, record
+  transaction, view holdings, update current price, view portfolio
+  summary) plus one scoped exception, `GET /portfolios` (list all
+  portfolios), approved via `specs/004-portfolio-switcher/spec.md` to
+  power the dashboard's portfolio switcher. New endpoints beyond these
+  seven require a specification update first, following the same
+  approval pattern used for this exception.
 - **UI scope**: a maximum of 2 screens, consolidating the source
   specification's four screens without dropping any of their
   functionality:
@@ -248,4 +261,4 @@ Consistency) before implementation begins. Any deviation MUST be
 justified explicitly in the relevant artifact (e.g., a "Complexity
 Justification" note in the plan) or the deviation MUST be removed.
 
-**Version**: 1.2.0 | **Ratified**: 2026-09-17 | **Last Amended**: 2026-09-18
+**Version**: 1.3.0 | **Ratified**: 2026-09-17 | **Last Amended**: 2026-09-20

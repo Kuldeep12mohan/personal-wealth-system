@@ -59,4 +59,19 @@ describe("RecordTransactionForm", () => {
     ).toBeInTheDocument();
     expect(screen.getByLabelText("Quantity")).toHaveValue("10");
   });
+
+  it("BUY and SELL options have explicit background/text colors so they stay legible in dark mode", () => {
+    render(<RecordTransactionForm holdingId="HOLD-20001" />);
+
+    const select = screen.getByLabelText("Transaction type") as HTMLSelectElement;
+    const options = Array.from(select.options);
+    const buyOption = options.find((option) => option.value === "BUY")!;
+    const sellOption = options.find((option) => option.value === "SELL")!;
+
+    expect(buyOption.style.backgroundColor).not.toBe("");
+    expect(buyOption.style.color).not.toBe("");
+    expect(sellOption.style.backgroundColor).not.toBe("");
+    expect(sellOption.style.color).not.toBe("");
+    expect(buyOption.style.color).not.toBe(sellOption.style.color);
+  });
 });

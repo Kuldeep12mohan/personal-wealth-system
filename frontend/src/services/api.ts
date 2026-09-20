@@ -51,6 +51,10 @@ export function createPortfolio(name: string, currency: CurrencyCode) {
   return post<Portfolio>("/portfolios", { name, currency });
 }
 
+export function listPortfolios() {
+  return get<Portfolio[]>("/portfolios");
+}
+
 export function addHolding(
   portfolioId: string,
   name: string,

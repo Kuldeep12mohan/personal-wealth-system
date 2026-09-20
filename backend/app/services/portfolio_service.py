@@ -22,6 +22,10 @@ def create_portfolio(db: Session, name: str | None, currency: str | None) -> Por
     return portfolio
 
 
+def list_portfolios(db: Session) -> list[Portfolio]:
+    return db.query(Portfolio).order_by(Portfolio.createdAt).all()
+
+
 def get_portfolio(db: Session, portfolio_id: str) -> Portfolio:
     portfolio = db.get(Portfolio, portfolio_id)
     if portfolio is None:

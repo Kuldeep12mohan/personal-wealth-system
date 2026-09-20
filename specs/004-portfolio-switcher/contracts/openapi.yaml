@@ -1,0 +1,50 @@
+openapi: 3.0.3
+info:
+  title: Personal Wealth Management System POC API — Portfolio Switcher delta
+  version: "1.1.0"
+  description: >
+    Delta contract for the Portfolio Switcher feature (specs/004-portfolio-switcher).
+    Documents ONLY the one new endpoint this feature adds; the 5 pre-existing
+    endpoints (create portfolio, add holding, record transaction, view holdings,
+    update current price, view portfolio summary) are unchanged and remain
+    defined in specs/001-wealth-management-poc/contracts/openapi.yaml. Adding
+    this endpoint requires the companion constitution amendment tracked in
+    plan.md's Complexity Tracking section (six → seven approved endpoints).
+servers:
+  - url: /api
+paths:
+  /portfolios:
+    get:
+      operationId: listPortfolios
+      summary: List all existing portfolios, for selection in the dashboard switcher (FR-001, FR-002)
+      responses:
+        '200':
+          description: All portfolios currently in the system, ordered by creation time ascending
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Portfolio'
+
+components:
+  schemas:
+    CurrencyCode:
+      type: string
+      enum: [INR, USD]
+
+    Portfolio:
+      type: object
+      description: >
+        Identical to the existing Portfolio schema returned by
+        POST /portfolios (specs/001-wealth-management-poc/contracts/openapi.yaml) —
+        reused as-is, no new fields.
+      properties:
+        portfolioId:
+          type: string
+          example: PORT-10001
+        name:
+          type: string
+          example: My Investments
+        currency:
+          $ref: '#/components/schemas/CurrencyCode'

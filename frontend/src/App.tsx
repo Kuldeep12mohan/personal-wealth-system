@@ -1,9 +1,13 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import PortfolioDashboardPage from "./pages/PortfolioDashboardPage";
 import PortfolioSetupPage from "./pages/PortfolioSetupPage";
+import PortfolioSwitcher from "./components/PortfolioSwitcher";
 import { useTheme } from "./hooks/useTheme";
+import { listPortfolios, Portfolio } from "./services/api";
 
 type View = "setup" | "dashboard";
+
+const LAST_PORTFOLIO_KEY = "personal-wealth:lastPortfolioId";
 
 /**
  * Simple in-memory view switch between the two allowed screens
@@ -13,8 +17,60 @@ type View = "setup" | "dashboard";
 export default function App() {
   const [view, setView] = useState<View>("setup");
   const [portfolioId, setPortfolioId] = useState("");
+  const [portfolios, setPortfolios] = useState<Portfolio[]>([]);
+  const [isLoadingPortfolios, setIsLoadingPortfolios] = useState(true);
+  const [portfoliosError, setPortfoliosError] = useState<string | null>(null);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const { theme, toggleTheme } = useTheme();
+
+  const hasAppliedInitialSelection = useRef(false);
+
+  async function refreshPortfolios() {
+    setIsLoadingPortfolios(true);
+    setPortfoliosError(null);
+    try {
+      const data = await listPortfolios();
+      setPortfolios(data);
+      if (!hasAppliedInitialSelection.current) {
+        hasAppliedInitialSelection.current = true;
+        const stored = localStorage.getItem(LAST_PORTFOLIO_KEY);
+        if (stored && data.some((p) => p.portfolioId === stored)) {
+          setPortfolioId(stored);
+        } else {
+          if (stored) localStorage.removeItem(LAST_PORTFOLIO_KEY);
+          if (data.length === 1) {
+            setPortfolioId(data[0].portfolioId);
+          }
+        }
+      }
+    } catch (err) {
+      setPortfoliosError((err as Error).message);
+    } finally {
+      setIsLoadingPortfolios(false);
+    }
+  }
+
+  useEffect(() => {
+    refreshPortfolios();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // Fall back gracefully (FR-009) if the currently selected portfolio is no
+  // longer present in the latest fetched list (e.g. removed elsewhere).
+  useEffect(() => {
+    if (isLoadingPortfolios || portfoliosError) return;
+    if (portfolioId && !portfolios.some((p) => p.portfolioId === portfolioId)) {
+      localStorage.removeItem(LAST_PORTFOLIO_KEY);
+      setPortfolioId(portfolios.length > 0 ? portfolios[0].portfolioId : "");
+    }
+  }, [portfolios, portfolioId, isLoadingPortfolios, portfoliosError]);
+
+  function selectPortfolio(id: string) {
+    setPortfolioId(id);
+    if (id) {
+      localStorage.setItem(LAST_PORTFOLIO_KEY, id);
+    }
+  }
 
   const sidebarLinkBase =
     "flex w-full items-center gap-3 rounded-lg border border-transparent px-3 py-2 text-left text-sm font-semibold text-[var(--color-text-muted)] transition-colors duration-150 hover:enabled:bg-[var(--color-surface-muted)] hover:enabled:text-[var(--color-text)] disabled:cursor-not-allowed disabled:opacity-50 max-[720px]:w-auto";
@@ -98,16 +154,17 @@ export default function App() {
 
         {!sidebarCollapsed && (
           <div className="mt-auto border-t border-[var(--color-border)] pt-4">
-            <label className="flex min-w-[160px] flex-col gap-1 text-[13px] font-semibold text-[var(--color-text-muted)]">
-              Portfolio ID for dashboard
-              <input
-                className="rounded-lg border border-[var(--color-border-strong)] bg-[var(--color-surface)] px-3 py-[9px] font-sans text-sm text-[var(--color-text)] transition-[border-color,box-shadow] duration-150 focus:border-[var(--color-primary)] focus:shadow-[0_0_0_3px_var(--color-primary-soft)] focus:outline-none"
-                value={portfolioId}
-                onChange={(e) => setPortfolioId(e.target.value)}
-                placeholder="e.g. PORT-10001"
-                aria-label="Portfolio ID"
-              />
-            </label>
+            <span className="mb-2 block text-[11px] font-bold uppercase tracking-wide text-[var(--color-text-faint)]">
+              Portfolios
+            </span>
+            <PortfolioSwitcher
+              portfolios={portfolios}
+              selectedId={portfolioId}
+              loading={isLoadingPortfolios}
+              error={portfoliosError}
+              onSelect={selectPortfolio}
+              onRetry={() => refreshPortfolios()}
+            />
           </div>
         )}
       </aside>
@@ -116,7 +173,10 @@ export default function App() {
         <div className="mx-auto max-w-[1080px] px-6 pt-6 pb-12 max-[720px]:px-3 max-[720px]:pt-4 max-[720px]:pb-8">
           {view === "setup" && (
             <PortfolioSetupPage
-              onPortfolioCreated={(p) => setPortfolioId(p.portfolioId)}
+              onPortfolioCreated={async (p) => {
+                await refreshPortfolios();
+                selectPortfolio(p.portfolioId);
+              }}
             />
           )}
 

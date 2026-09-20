@@ -78,13 +78,23 @@ export default function RecordTransactionForm({ holdingId, onRecorded }: Props) 
           Type
           <span className="relative">
             <select
-              className={`min-w-[140px] rounded-lg border-2 px-4 py-[9px] font-sans text-[15px] font-bold text-[var(--color-text)] transition-[border-color,box-shadow] duration-150 focus:shadow-[0_0_0_3px_var(--color-primary-soft)] focus:outline-none ${typeClasses}`}
+              className={`min-w-[140px] rounded-lg border-2 px-4 py-[9px] font-sans text-[15px] font-bold transition-[border-color,box-shadow] duration-150 focus:shadow-[0_0_0_3px_var(--color-primary-soft)] focus:outline-none ${typeClasses}`}
               value={type}
               onChange={(e) => setType(e.target.value as TransactionType)}
               aria-label="Transaction type"
             >
-              <option value="BUY">BUY</option>
-              <option value="SELL">SELL</option>
+              <option
+                value="BUY"
+                style={{ backgroundColor: "var(--color-surface)", color: "var(--color-success)" }}
+              >
+                BUY
+              </option>
+              <option
+                value="SELL"
+                style={{ backgroundColor: "var(--color-surface)", color: "var(--color-danger)" }}
+              >
+                SELL
+              </option>
             </select>
           </span>
           <span
