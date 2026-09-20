@@ -1,42 +1,36 @@
 <!--
 Sync Impact Report
 ==================
-Version change: 1.3.0 → 1.4.0
-Rationale: MINOR bump — three related boundaries are widened/narrowed in
-one approved change: the fixed entity count (3 → 4), the fixed
-API-endpoint boundary (7 → 8), and the "advanced charts" Out-of-Scope
-exclusion (narrowed to carve out one specific, non-interactive chart).
-This is in response to an approved feature request
-(specs/005-portfolio-history-chart/spec.md, plan.md Complexity
-Tracking), itself preceded by a documented assessment
-(.specify/assessments/performance-chart/decision.md) in which the
-project owner explicitly reviewed and accepted a wider-than-usual
-amendment. No principle is removed. This is the first amendment to touch
-more than one boundary at once (003 touched only styling; 004 touched
-only endpoint count).
+Version change: 1.4.0 → 1.5.0
+Rationale: MINOR bump — the chart exception approved in v1.4.0 is widened
+from "non-interactive" to permit hover/tap tooltips and always-visible,
+color-coded point markers on that same single chart, in response to an
+approved feature request (specs/007-interactive-performance-chart/
+spec.md, plan.md Complexity Tracking). This reverses part of a
+deliberate choice made one feature earlier
+(specs/006-modernize-performance-chart) to stay non-interactive; the
+project owner was explicitly presented with that tension during
+/speckit-plan (see specs/007-interactive-performance-chart/plan.md
+Constitution Check) and chose to proceed. No principle is removed, no
+new entity or endpoint is added, and no other charting capability
+(zoom, custom date-range filtering, per-holding history, benchmark
+comparisons) is permitted — the exception remains scoped to this one
+chart's interaction model only.
 
 Modified principles:
-- I. Simplicity First — "3 entities" changed to "4 entities"; "7 APIs"
-  changed to "8 APIs".
-- II. Maintainability Through Convention — rationale's "three entities
-  and seven endpoints" changed to "four entities and eight endpoints".
-- V. API Contract Consistency — "The 7 REST endpoints" changed to "The 8
-  REST endpoints".
-- IX. Minimal Architecture, Dependencies & Infrastructure — rationale
-  updated to record this second, wider exception alongside the Tailwind
-  CSS precedent.
+- IX. Minimal Architecture, Dependencies & Infrastructure — main text
+  and rationale updated to describe the chart exception as permitting
+  hover/tap tooltips and point markers rather than being strictly
+  non-interactive; no new dependency is introduced (native
+  Intl.NumberFormat, no charting library).
 
 Modified sections:
-- Technology & Scope Boundaries — Data model bullet updated from
-  "exactly three entities" to enumerate the 4th entity
-  (PortfolioHistoryPoint). APIs bullet updated from "exactly the seven
-  approved endpoints..." to enumerate the 8th endpoint (portfolio value
-  history, GET /portfolios/{portfolioId}/history), naming it as a
-  scoped, approved exception mirroring the Tailwind CSS and portfolio-
-  switcher precedents. Out-of-scope bullet's "advanced charts" exclusion
-  narrowed to name and carve out the one approved exception (a single
-  non-interactive, portfolio-level, two-line value/invested-amount trend
-  chart), with all other charting capability remaining excluded.
+- Technology & Scope Boundaries — Out-of-scope bullet's chart exception
+  reworded from "a single, non-interactive, portfolio-level, two-line...
+  chart" to "a single, portfolio-level, two-line... chart, including
+  hover/tap tooltips and always-visible per-point gain/loss markers";
+  zoom, custom date-range filtering, per-holding history, and benchmark
+  comparisons remain explicitly excluded.
 
 Added sections: none.
 
@@ -181,11 +175,12 @@ CI/CD pipelines, cloud services, or microservices MAY be introduced.
 Anything listed in the specification's "Explicitly Out of Scope" section
 (authentication/SSO, real-time market data, brokerage/bank integrations,
 tax/capital-gains logic, notifications, cloud deployment, multi-user
-access control, interactive/advanced charts, etc.) MUST NOT be
-implemented, even if it would be "nice to have," except for the two
-narrowly scoped exceptions named in Technology & Scope Boundaries
-(the portfolio switcher's `GET /portfolios` and the performance-history
-chart).
+access control, advanced charts such as zoom or custom date-range
+filtering, etc.) MUST NOT be implemented, even if it would be "nice to
+have," except for the two narrowly scoped exceptions named in
+Technology & Scope Boundaries (the portfolio switcher's
+`GET /portfolios` and the performance-history chart, including its
+hover/tap tooltips and point markers).
 **Rationale**: The specification states the stack is "intentionally
 simple to minimize implementation and token overhead" and defines an
 explicit out-of-scope list; adding architecture or dependencies beyond
@@ -194,12 +189,18 @@ implementation target. Tailwind CSS was approved as a scoped, single
 exception (specs/003-tailwind-ui-modernization/spec.md) to allow a
 visual modernization pass without reopening the stack to general
 frontend framework additions. A second, wider exception was approved for
-a single, non-interactive, portfolio-level, two-line performance-history
-chart (specs/005-portfolio-history-chart/spec.md), following an explicit
+a single, portfolio-level, two-line performance-history chart
+(specs/005-portfolio-history-chart/spec.md), following an explicit
 assessment (.specify/assessments/performance-chart/decision.md) in which
 the project owner reviewed and accepted a broader-than-usual amendment;
 this exception is scoped narrowly (see Technology & Scope Boundaries)
-and does not reopen the "no advanced charts" exclusion generally.
+and does not reopen the "no advanced charts" exclusion generally. That
+same chart's exception was further widened to permit hover/tap tooltips
+and always-visible, color-coded point markers
+(specs/007-interactive-performance-chart/spec.md), still without
+introducing a charting library or any other interactive feature (zoom,
+custom date-range filtering, per-holding history, benchmark
+comparisons) beyond this one chart's tooltip/marker interaction.
 
 ## Technology & Scope Boundaries
 
@@ -244,13 +245,19 @@ and does not reopen the "no advanced charts" exclusion generally.
   brokerage/bank integrations, authentication/SSO, tax or capital-gains
   calculation, dividend tracking, SIP automation, financial advice or AI
   recommendations, portfolio optimization, notifications, cloud
-  deployment, microservices, interactive or advanced charts (zoom,
-  tooltips, custom date ranges, per-holding history, or benchmark/index
+  deployment, microservices, advanced charting features (zoom, custom
+  date-range filtering, per-holding history, or benchmark/index
   comparisons), multi-user access control. The sole exception is a
-  single, non-interactive, portfolio-level, two-line (current value vs.
-  invested amount) performance-history chart, approved via
-  `specs/005-portfolio-history-chart/spec.md`; no other charting
-  capability may be added without a further amendment.
+  single, portfolio-level, two-line (current value vs. invested amount)
+  performance-history chart, approved via
+  `specs/005-portfolio-history-chart/spec.md`, including currency-
+  formatted axis labels with gridlines, always-visible color-coded
+  (gain/loss/neutral) point markers, and hover (desktop) / tap (mobile)
+  tooltips showing a point's date, current value, invested amount, and
+  profit/loss, approved via
+  `specs/007-interactive-performance-chart/spec.md`; no other charting
+  capability, and no charting library, may be added without a further
+  amendment.
 
 ## Development Workflow (SpecKit SDD)
 
@@ -297,4 +304,4 @@ Consistency) before implementation begins. Any deviation MUST be
 justified explicitly in the relevant artifact (e.g., a "Complexity
 Justification" note in the plan) or the deviation MUST be removed.
 
-**Version**: 1.4.0 | **Ratified**: 2026-09-17 | **Last Amended**: 2026-09-20
+**Version**: 1.5.0 | **Ratified**: 2026-09-17 | **Last Amended**: 2026-09-20

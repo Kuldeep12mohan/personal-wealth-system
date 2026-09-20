@@ -111,7 +111,7 @@ describe("PortfolioDashboardPage", () => {
   });
 
   it("renders holdings and summary from a seeded API response", async () => {
-    render(<PortfolioDashboardPage portfolioId="PORT-10001" />);
+    render(<PortfolioDashboardPage portfolioId="PORT-10001" currency="INR" />);
 
     expect(await screen.findByText("ABC Bank")).toBeInTheDocument();
     expect(screen.getByText("5000")).toBeInTheDocument();
@@ -119,7 +119,7 @@ describe("PortfolioDashboardPage", () => {
   });
 
   it("renders the add-investment and record-transaction forms in place", async () => {
-    render(<PortfolioDashboardPage portfolioId="PORT-10001" />);
+    render(<PortfolioDashboardPage portfolioId="PORT-10001" currency="INR" />);
 
     await screen.findByText("ABC Bank");
     expect(screen.getByRole("button", { name: "Add Investment" })).toBeInTheDocument();
@@ -137,13 +137,13 @@ describe("PortfolioDashboardPage history isolation across portfolio switch", () 
 
   it("shows only the newly selected portfolio's history after a portfolioId change, never a mix of both", async () => {
     mockFetchForPortfolio("PORT-10001");
-    const { rerender } = render(<PortfolioDashboardPage portfolioId="PORT-10001" />);
+    const { rerender } = render(<PortfolioDashboardPage portfolioId="PORT-10001" currency="INR" />);
 
     const firstChart = await screen.findByRole("img", { name: /performance history/i });
     expect(firstChart.querySelectorAll("polyline").length).toBe(2);
 
     mockFetchForPortfolio("PORT-10002");
-    rerender(<PortfolioDashboardPage portfolioId="PORT-10002" />);
+    rerender(<PortfolioDashboardPage portfolioId="PORT-10002" currency="USD" />);
 
     expect(await screen.findByText(/not enough history yet/i)).toBeInTheDocument();
     expect(

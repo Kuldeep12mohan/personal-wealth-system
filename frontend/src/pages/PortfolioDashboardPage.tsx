@@ -6,6 +6,7 @@ import RecordTransactionForm from "../components/RecordTransactionForm";
 import SummaryPanel from "../components/SummaryPanel";
 import UpdatePriceForm from "../components/UpdatePriceForm";
 import {
+  CurrencyCode,
   getPortfolioHistory,
   getPortfolioSummary,
   HistoryPoint,
@@ -16,6 +17,7 @@ import {
 
 interface Props {
   portfolioId: string;
+  currency: CurrencyCode;
 }
 
 /**
@@ -23,7 +25,7 @@ interface Props {
  * add-investment / record-transaction / update-price actions, all
  * reachable in place (FR-024).
  */
-export default function PortfolioDashboardPage({ portfolioId }: Props) {
+export default function PortfolioDashboardPage({ portfolioId, currency }: Props) {
   const [holdings, setHoldings] = useState<HoldingView[]>([]);
   const [summary, setSummary] = useState<PortfolioSummary | null>(null);
   const [history, setHistory] = useState<HistoryPoint[]>([]);
@@ -147,7 +149,7 @@ export default function PortfolioDashboardPage({ portfolioId }: Props) {
             <div className={cardHeader}>
               <h2 className={cardTitle}>Performance History</h2>
             </div>
-            <PerformanceHistoryChart history={history} />
+            <PerformanceHistoryChart history={history} currency={currency} />
           </section>
 
           <section className={cardBase}>

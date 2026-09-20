@@ -181,7 +181,12 @@ export default function App() {
           )}
 
           {view === "dashboard" && portfolioId && (
-            <PortfolioDashboardPage portfolioId={portfolioId} />
+            <PortfolioDashboardPage
+              portfolioId={portfolioId}
+              currency={
+                portfolios.find((p) => p.portfolioId === portfolioId)?.currency ?? "INR"
+              }
+            />
           )}
         </div>
       </main>
