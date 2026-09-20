@@ -21,3 +21,8 @@ class Portfolio(Base):
     holdings = relationship(
         "Holding", back_populates="portfolio", cascade="all, delete-orphan"
     )
+    historyPoints = relationship(
+        "PortfolioHistoryPoint",
+        back_populates="portfolio",
+        cascade="all, delete-orphan",
+    )

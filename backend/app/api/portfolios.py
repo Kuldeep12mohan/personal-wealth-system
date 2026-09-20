@@ -3,7 +3,8 @@ from sqlalchemy.orm import Session
 
 from app.db import get_db
 from app.schemas.portfolio import CreatePortfolioRequest, Portfolio, PortfolioSummary
-from app.services import portfolio_service, summary_service
+from app.schemas.portfolio_history import HistoryPoint
+from app.services import history_service, portfolio_service, summary_service
 from app.services.errors import NotFoundError, ValidationError
 
 router = APIRouter(tags=["portfolios"])
@@ -44,3 +45,14 @@ def get_portfolio_summary(portfolioId: str, db: Session = Depends(get_db)):
     except NotFoundError as exc:
         raise HTTPException(status_code=404, detail=str(exc)) from exc
     return PortfolioSummary(**summary)
+
+
+@router.get(
+    "/portfolios/{portfolioId}/history", response_model=list[HistoryPoint]
+)
+def get_portfolio_history(portfolioId: str, db: Session = Depends(get_db)):
+    try:
+        history = history_service.get_portfolio_history(db, portfolioId)
+    except NotFoundError as exc:
+        raise HTTPException(status_code=404, detail=str(exc)) from exc
+    return [HistoryPoint(**point) for point in history]

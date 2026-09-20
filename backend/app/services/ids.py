@@ -1,8 +1,9 @@
 """Sequential prefixed identifier generation (research.md).
 
 PORT-<n> seeded at 10001, HOLD-<n> seeded at 20001, TXN-<n> seeded at
-30001. Each call determines the next id by inspecting the max existing
-id of that type in the database, so ids survive process restarts.
+30001, HIST-<n> seeded at 40001. Each call determines the next id by
+inspecting the max existing id of that type in the database, so ids
+survive process restarts.
 """
 import re
 
@@ -11,10 +12,12 @@ from sqlalchemy.orm import Session
 PORTFOLIO_PREFIX = "PORT-"
 HOLDING_PREFIX = "HOLD-"
 TRANSACTION_PREFIX = "TXN-"
+HISTORY_PREFIX = "HIST-"
 
 PORTFOLIO_SEED = 10001
 HOLDING_SEED = 20001
 TRANSACTION_SEED = 30001
+HISTORY_SEED = 40001
 
 _ID_RE = re.compile(r"-(\d+)$")
 
@@ -48,3 +51,9 @@ def generate_transaction_id(db: Session) -> str:
     from app.models.transaction import Transaction
 
     return _next_id(db, Transaction, TRANSACTION_PREFIX, TRANSACTION_SEED)
+
+
+def generate_history_point_id(db: Session) -> str:
+    from app.models.portfolio_history_point import PortfolioHistoryPoint
+
+    return _next_id(db, PortfolioHistoryPoint, HISTORY_PREFIX, HISTORY_SEED)

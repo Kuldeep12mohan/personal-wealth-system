@@ -6,7 +6,7 @@ from sqlalchemy.orm import Session
 
 from app.models.holding import Holding
 from app.models.transaction import SUPPORTED_TYPES, Transaction
-from app.services import holding_calculations, ids
+from app.services import history_service, holding_calculations, ids
 from app.services.errors import NotFoundError, ValidationError
 from app.services.rounding import round_money, round_quantity
 
@@ -52,6 +52,12 @@ def record_transaction(
         transactionDate=transaction_date,
     )
     db.add(transaction)
+    # Append to the already-loaded relationship collection (rather than
+    # relying on a fresh query) so history_service sees this transaction
+    # even when `holding.transactions` was cached earlier in this session
+    # (e.g. by the SELL-quantity check above).
+    holding.transactions.append(transaction)
+    history_service.record_history_point(db, holding.portfolioId)
     db.commit()
     db.refresh(transaction)
     return transaction

@@ -21,7 +21,12 @@ Base = declarative_base()
 
 def init_db() -> None:
     # Import models so they are registered on Base.metadata before create_all.
-    from app.models import holding, portfolio, transaction  # noqa: F401
+    from app.models import (  # noqa: F401
+        holding,
+        portfolio,
+        portfolio_history_point,
+        transaction,
+    )
 
     Base.metadata.create_all(bind=engine)
 

@@ -47,6 +47,14 @@ export interface PortfolioSummary {
   profitLossPercentage: number;
 }
 
+export interface HistoryPoint {
+  recordedAt: string;
+  totalInvested: number;
+  currentValue: number;
+  profitLoss: number;
+  profitLossPercentage: number;
+}
+
 export function createPortfolio(name: string, currency: CurrencyCode) {
   return post<Portfolio>("/portfolios", { name, currency });
 }
@@ -95,4 +103,8 @@ export function updateCurrentPrice(holdingId: string, currentPrice: number) {
 
 export function getPortfolioSummary(portfolioId: string) {
   return get<PortfolioSummary>(`/portfolios/${portfolioId}/summary`);
+}
+
+export function getPortfolioHistory(portfolioId: string) {
+  return get<HistoryPoint[]>(`/portfolios/${portfolioId}/history`);
 }

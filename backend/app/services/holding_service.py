@@ -6,7 +6,7 @@ from sqlalchemy.orm import Session
 
 from app.models.holding import SUPPORTED_TYPES, Holding
 from app.models.portfolio import Portfolio
-from app.services import holding_calculations, ids
+from app.services import history_service, holding_calculations, ids
 from app.services.errors import NotFoundError, ValidationError
 from app.services.rounding import round_money
 
@@ -85,6 +85,7 @@ def update_current_price(db: Session, holding_id: str, current_price) -> Holding
         raise ValidationError("currentPrice must be greater than zero")
 
     holding.currentPrice = round_money(current_price)
+    history_service.record_history_point(db, holding.portfolioId)
     db.commit()
     db.refresh(holding)
     return holding

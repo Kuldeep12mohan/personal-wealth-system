@@ -1,11 +1,14 @@
 import { useEffect, useRef, useState } from "react";
 import AddInvestmentForm from "../components/AddInvestmentForm";
 import HoldingsTable from "../components/HoldingsTable";
+import PerformanceHistoryChart from "../components/PerformanceHistoryChart";
 import RecordTransactionForm from "../components/RecordTransactionForm";
 import SummaryPanel from "../components/SummaryPanel";
 import UpdatePriceForm from "../components/UpdatePriceForm";
 import {
+  getPortfolioHistory,
   getPortfolioSummary,
+  HistoryPoint,
   HoldingView,
   listHoldings,
   PortfolioSummary,
@@ -23,6 +26,7 @@ interface Props {
 export default function PortfolioDashboardPage({ portfolioId }: Props) {
   const [holdings, setHoldings] = useState<HoldingView[]>([]);
   const [summary, setSummary] = useState<PortfolioSummary | null>(null);
+  const [history, setHistory] = useState<HistoryPoint[]>([]);
   const [selectedHoldingId, setSelectedHoldingId] = useState<string>("");
   const [loadError, setLoadError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -33,12 +37,14 @@ export default function PortfolioDashboardPage({ portfolioId }: Props) {
   async function refresh() {
     setLoadError(null);
     try {
-      const [holdingsData, summaryData] = await Promise.all([
+      const [holdingsData, summaryData, historyData] = await Promise.all([
         listHoldings(portfolioId),
         getPortfolioSummary(portfolioId),
+        getPortfolioHistory(portfolioId),
       ]);
       setHoldings(holdingsData);
       setSummary(summaryData);
+      setHistory(historyData);
       if (!selectedHoldingId && holdingsData.length > 0) {
         setSelectedHoldingId(holdingsData[0].holdingId);
       }
@@ -50,6 +56,11 @@ export default function PortfolioDashboardPage({ portfolioId }: Props) {
   }
 
   useEffect(() => {
+    // Discard the previous portfolio's history immediately so a switch
+    // never briefly shows one portfolio's trend under another's name
+    // (FR-007) while the new portfolio's data is still loading.
+    setHistory([]);
+    setIsLoading(true);
     refresh();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [portfolioId]);
@@ -130,6 +141,13 @@ export default function PortfolioDashboardPage({ portfolioId }: Props) {
               <h2 className={cardTitle}>Portfolio Summary</h2>
             </div>
             {summary && <SummaryPanel summary={summary} />}
+          </section>
+
+          <section className={cardBase}>
+            <div className={cardHeader}>
+              <h2 className={cardTitle}>Performance History</h2>
+            </div>
+            <PerformanceHistoryChart history={history} />
           </section>
 
           <section className={cardBase}>

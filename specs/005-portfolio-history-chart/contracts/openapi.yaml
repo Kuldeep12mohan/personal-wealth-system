@@ -1,0 +1,96 @@
+openapi: 3.0.3
+info:
+  title: Personal Wealth Management System POC API — Portfolio Performance History delta
+  version: "1.2.0"
+  description: >
+    Delta contract for the Portfolio Performance History Chart feature
+    (specs/005-portfolio-history-chart). Documents ONLY the one new endpoint
+    this feature adds; the 7 pre-existing endpoints (create portfolio, add
+    holding, record transaction, view holdings, update current price, view
+    portfolio summary, list portfolios) are unchanged and remain defined in
+    specs/001-wealth-management-poc/contracts/openapi.yaml and
+    specs/004-portfolio-switcher/contracts/openapi.yaml. Adding this endpoint,
+    plus the new PortfolioHistoryPoint entity behind it, requires the
+    companion constitution amendment tracked in plan.md's Complexity Tracking
+    section (3 → 4 approved entities, 7 → 8 approved endpoints, and narrowing
+    the "advanced charts" Out-of-Scope bullet).
+servers:
+  - url: /api
+paths:
+  /portfolios/{portfolioId}/history:
+    get:
+      operationId: getPortfolioHistory
+      summary: >
+        Retrieve a portfolio's full, unbounded value/invested-amount time
+        series, ordered oldest to newest (FR-004, FR-005, FR-008)
+      parameters:
+        - name: portfolioId
+          in: path
+          required: true
+          schema:
+            type: string
+          example: PORT-10001
+      responses:
+        '200':
+          description: >
+            Every recorded history point for the portfolio, oldest first.
+            An empty array means no history has been recorded yet
+            (FR-006 "no history yet" state).
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/HistoryPoint'
+        '404':
+          description: Portfolio not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+components:
+  schemas:
+    HistoryPoint:
+      type: object
+      description: >
+        One captured point in a portfolio's value history. profitLoss and
+        profitLossPercentage are derived at read time from totalInvested and
+        currentValue, identical to the formula used by the existing portfolio
+        summary endpoint (FR-008) — they are not separately stored.
+      properties:
+        recordedAt:
+          type: string
+          format: date-time
+          example: "2026-09-20T14:32:00Z"
+        totalInvested:
+          type: number
+          format: float
+          example: 50000.0
+        currentValue:
+          type: number
+          format: float
+          example: 52500.0
+        profitLoss:
+          type: number
+          format: float
+          example: 2500.0
+        profitLossPercentage:
+          type: number
+          format: float
+          example: 5.0
+      required:
+        - recordedAt
+        - totalInvested
+        - currentValue
+        - profitLoss
+        - profitLossPercentage
+
+    Error:
+      type: object
+      description: Identical to the existing error schema used by all other endpoints.
+      required: [error]
+      properties:
+        error:
+          type: string
+          example: Portfolio PORT-10001 not found

@@ -1,30 +1,42 @@
 <!--
 Sync Impact Report
 ==================
-Version change: 1.2.0 → 1.3.0
-Rationale: MINOR bump — the fixed API-endpoint boundary is materially
-redefined (6 endpoints → 7 endpoints) in response to an approved feature
-request (specs/004-portfolio-switcher/spec.md, plan.md Complexity
-Tracking). No principle is removed; the change is scoped to naming one
-additional, already-clarified read-only endpoint (GET /portfolios) as
-approved, exactly as the Tailwind CSS styling exception was approved in
-v1.2.0. No data model, business rule, or calculation is affected, and no
-UI screen is added (the endpoint is consumed by a switcher control
-inside the existing 2-screen scope).
+Version change: 1.3.0 → 1.4.0
+Rationale: MINOR bump — three related boundaries are widened/narrowed in
+one approved change: the fixed entity count (3 → 4), the fixed
+API-endpoint boundary (7 → 8), and the "advanced charts" Out-of-Scope
+exclusion (narrowed to carve out one specific, non-interactive chart).
+This is in response to an approved feature request
+(specs/005-portfolio-history-chart/spec.md, plan.md Complexity
+Tracking), itself preceded by a documented assessment
+(.specify/assessments/performance-chart/decision.md) in which the
+project owner explicitly reviewed and accepted a wider-than-usual
+amendment. No principle is removed. This is the first amendment to touch
+more than one boundary at once (003 touched only styling; 004 touched
+only endpoint count).
 
 Modified principles:
-- I. Simplicity First — "6 APIs" changed to "7 APIs".
-- II. Maintainability Through Convention — rationale's "six endpoints"
-  changed to "seven endpoints".
-- V. API Contract Consistency — "The 6 REST endpoints" changed to "The 7
+- I. Simplicity First — "3 entities" changed to "4 entities"; "7 APIs"
+  changed to "8 APIs".
+- II. Maintainability Through Convention — rationale's "three entities
+  and seven endpoints" changed to "four entities and eight endpoints".
+- V. API Contract Consistency — "The 7 REST endpoints" changed to "The 8
   REST endpoints".
+- IX. Minimal Architecture, Dependencies & Infrastructure — rationale
+  updated to record this second, wider exception alongside the Tailwind
+  CSS precedent.
 
 Modified sections:
-- Technology & Scope Boundaries — APIs bullet updated from "exactly the
-  six endpoints..." to enumerate the 7th endpoint (list all portfolios,
-  GET /portfolios), naming it as a scoped, approved exception mirroring
-  the Tailwind CSS precedent, and narrowing "new endpoints require a
-  specification update first" accordingly.
+- Technology & Scope Boundaries — Data model bullet updated from
+  "exactly three entities" to enumerate the 4th entity
+  (PortfolioHistoryPoint). APIs bullet updated from "exactly the seven
+  approved endpoints..." to enumerate the 8th endpoint (portfolio value
+  history, GET /portfolios/{portfolioId}/history), naming it as a
+  scoped, approved exception mirroring the Tailwind CSS and portfolio-
+  switcher precedents. Out-of-scope bullet's "advanced charts" exclusion
+  narrowed to name and carve out the one approved exception (a single
+  non-interactive, portfolio-level, two-line value/invested-amount trend
+  chart), with all other charting capability remaining excluded.
 
 Added sections: none.
 
@@ -46,8 +58,9 @@ Follow-up TODOs: none.
 ### I. Simplicity First
 The system MUST implement only what is described in
 `docs/Personal_Wealth_Management-SpecKit_SDD_POC.pdf` plus approved
-incremental changes: 3 entities (Portfolio, Holding, Transaction), 7
-APIs, a maximum of 2 UI screens, and one portfolio calculation model.
+incremental changes: 4 entities (Portfolio, Holding, Transaction,
+PortfolioHistoryPoint), 8 APIs, a maximum of 2 UI screens, and one
+portfolio calculation model.
 Every design or implementation choice MUST favor the
 smallest solution that satisfies the specification over a more general or
 "future-proof" one. When two approaches both satisfy a requirement, the
@@ -66,7 +79,7 @@ entities, fields, and endpoints MUST match the specification exactly
 (e.g. `portfolioId`, `holdingId`, `transactionId`, `currentValue`).
 Business logic (calculations, validation) MUST live in backend
 `services/`, never duplicated across API handlers or the frontend.
-**Rationale**: A small POC with three entities and seven endpoints stays
+**Rationale**: A small POC with four entities and eight endpoints stays
 easy to extend and review only if naming and structure are predictable;
 divergent naming between spec, API, and code is the single biggest
 source of confusion in short-lived SDD experiments.
@@ -99,7 +112,7 @@ specification, and prevents calculation logic from silently drifting
 out of sync between client and server.
 
 ### V. API Contract Consistency
-The 7 REST endpoints, their request/response JSON shapes, field names,
+The 8 REST endpoints, their request/response JSON shapes, field names,
 and HTTP status codes (400, 404, 409) MUST match
 `docs/Personal_Wealth_Management-SpecKit_SDD_POC.pdf` exactly unless a
 change is introduced through the incremental-change process (Principle
@@ -168,8 +181,11 @@ CI/CD pipelines, cloud services, or microservices MAY be introduced.
 Anything listed in the specification's "Explicitly Out of Scope" section
 (authentication/SSO, real-time market data, brokerage/bank integrations,
 tax/capital-gains logic, notifications, cloud deployment, multi-user
-access control, advanced charts, etc.) MUST NOT be implemented, even if
-it would be "nice to have."
+access control, interactive/advanced charts, etc.) MUST NOT be
+implemented, even if it would be "nice to have," except for the two
+narrowly scoped exceptions named in Technology & Scope Boundaries
+(the portfolio switcher's `GET /portfolios` and the performance-history
+chart).
 **Rationale**: The specification states the stack is "intentionally
 simple to minimize implementation and token overhead" and defines an
 explicit out-of-scope list; adding architecture or dependencies beyond
@@ -177,7 +193,13 @@ this list changes what is being measured and risks missing the one-day
 implementation target. Tailwind CSS was approved as a scoped, single
 exception (specs/003-tailwind-ui-modernization/spec.md) to allow a
 visual modernization pass without reopening the stack to general
-frontend framework additions.
+frontend framework additions. A second, wider exception was approved for
+a single, non-interactive, portfolio-level, two-line performance-history
+chart (specs/005-portfolio-history-chart/spec.md), following an explicit
+assessment (.specify/assessments/performance-chart/decision.md) in which
+the project owner reviewed and accepted a broader-than-usual amendment;
+this exception is scoped narrowly (see Technology & Scope Boundaries)
+and does not reopen the "no advanced charts" exclusion generally.
 
 ## Technology & Scope Boundaries
 
@@ -187,26 +209,34 @@ frontend framework additions.
 - **Backend**: Python, FastAPI, SQLAlchemy.
 - **Database**: SQLite.
 - **Testing**: Pytest (backend), React Testing Library (frontend).
-- **Data model**: exactly three entities — Portfolio, Holding,
+- **Data model**: exactly four entities — Portfolio, Holding,
   Transaction — with a 1:N:N relationship as defined in the
-  specification. No additional entities may be introduced without a
-  specification change.
-- **APIs**: exactly the seven approved endpoints — the original six
+  specification, plus one scoped exception: PortfolioHistoryPoint,
+  approved via `specs/005-portfolio-history-chart/spec.md`, an
+  append-only record of a portfolio's `totalInvested`/`currentValue` at
+  a point in time, belonging to exactly one Portfolio. No additional
+  entities may be introduced without a specification change.
+- **APIs**: exactly the eight approved endpoints — the original six
   defined in the specification (create portfolio, add holding, record
   transaction, view holdings, update current price, view portfolio
-  summary) plus one scoped exception, `GET /portfolios` (list all
+  summary) plus two scoped exceptions: `GET /portfolios` (list all
   portfolios), approved via `specs/004-portfolio-switcher/spec.md` to
-  power the dashboard's portfolio switcher. New endpoints beyond these
-  seven require a specification update first, following the same
-  approval pattern used for this exception.
+  power the dashboard's portfolio switcher, and
+  `GET /portfolios/{portfolioId}/history` (portfolio value/invested-
+  amount time series), approved via
+  `specs/005-portfolio-history-chart/spec.md` to power the dashboard's
+  performance-history chart. New endpoints beyond these eight require a
+  specification update first, following the same approval pattern used
+  for these exceptions.
 - **UI scope**: a maximum of 2 screens, consolidating the source
   specification's four screens without dropping any of their
   functionality:
   1. **Portfolio Setup** — Create Portfolio, Add Investment, and Record
      BUY/SELL Transaction.
   2. **Portfolio Dashboard** — Portfolio summary, holdings list, current
-     price display, and actions to add investments, record transactions,
-     and update prices as appropriate.
+     price display, the performance-history chart (see Out of Scope
+     exception below), and actions to add investments, record
+     transactions, and update prices as appropriate.
   This is a UI consolidation only; it MUST NOT be used to remove or
   alter any backend API, data model, business rule, or calculation from
   the source specification.
@@ -214,7 +244,13 @@ frontend framework additions.
   brokerage/bank integrations, authentication/SSO, tax or capital-gains
   calculation, dividend tracking, SIP automation, financial advice or AI
   recommendations, portfolio optimization, notifications, cloud
-  deployment, microservices, advanced charts, multi-user access control.
+  deployment, microservices, interactive or advanced charts (zoom,
+  tooltips, custom date ranges, per-holding history, or benchmark/index
+  comparisons), multi-user access control. The sole exception is a
+  single, non-interactive, portfolio-level, two-line (current value vs.
+  invested amount) performance-history chart, approved via
+  `specs/005-portfolio-history-chart/spec.md`; no other charting
+  capability may be added without a further amendment.
 
 ## Development Workflow (SpecKit SDD)
 
@@ -261,4 +297,4 @@ Consistency) before implementation begins. Any deviation MUST be
 justified explicitly in the relevant artifact (e.g., a "Complexity
 Justification" note in the plan) or the deviation MUST be removed.
 
-**Version**: 1.3.0 | **Ratified**: 2026-09-17 | **Last Amended**: 2026-09-20
+**Version**: 1.4.0 | **Ratified**: 2026-09-17 | **Last Amended**: 2026-09-20

@@ -2,6 +2,65 @@ import { render, screen } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import PortfolioDashboardPage from "../src/pages/PortfolioDashboardPage";
 
+const HISTORY_BY_PORTFOLIO: Record<string, unknown[]> = {
+  "PORT-10001": [
+    {
+      recordedAt: "2026-09-01T00:00:00Z",
+      totalInvested: 5000,
+      currentValue: 5000,
+      profitLoss: 0,
+      profitLossPercentage: 0,
+    },
+    {
+      recordedAt: "2026-09-02T00:00:00Z",
+      totalInvested: 5000,
+      currentValue: 5500,
+      profitLoss: 500,
+      profitLossPercentage: 10,
+    },
+  ],
+  "PORT-10002": [
+    {
+      recordedAt: "2026-09-03T00:00:00Z",
+      totalInvested: 2000,
+      currentValue: 2200,
+      profitLoss: 200,
+      profitLossPercentage: 10,
+    },
+  ],
+};
+
+function mockFetchForPortfolio(portfolioId: string) {
+  global.fetch = vi.fn((url: string) => {
+    if (url.includes("/summary")) {
+      return Promise.resolve({
+        ok: true,
+        text: async () =>
+          JSON.stringify({
+            portfolioId,
+            totalInvested: 5000,
+            currentValue: 5500,
+            profitLoss: 500,
+            profitLossPercentage: 10,
+          }),
+      }) as any;
+    }
+    if (url.includes("/history")) {
+      return Promise.resolve({
+        ok: true,
+        text: async () => JSON.stringify(HISTORY_BY_PORTFOLIO[portfolioId] ?? []),
+      }) as any;
+    }
+    if (url.includes("/holdings")) {
+      return Promise.resolve({
+        ok: true,
+        text: async () => JSON.stringify([]),
+      }) as any;
+    }
+    return Promise.reject(new Error(`unexpected url ${url}`));
+  }) as any;
+}
+
 describe("PortfolioDashboardPage", () => {
   beforeEach(() => {
     global.fetch = vi.fn((url: string) => {
@@ -16,6 +75,12 @@ describe("PortfolioDashboardPage", () => {
               profitLoss: 500,
               profitLossPercentage: 10,
             }),
+        }) as any;
+      }
+      if (url.includes("/history")) {
+        return Promise.resolve({
+          ok: true,
+          text: async () => JSON.stringify([]),
         }) as any;
       }
       if (url.includes("/holdings")) {
@@ -62,5 +127,27 @@ describe("PortfolioDashboardPage", () => {
       screen.getByRole("button", { name: "Record Transaction" })
     ).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Update Price" })).toBeInTheDocument();
+  });
+});
+
+describe("PortfolioDashboardPage history isolation across portfolio switch", () => {
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
+  it("shows only the newly selected portfolio's history after a portfolioId change, never a mix of both", async () => {
+    mockFetchForPortfolio("PORT-10001");
+    const { rerender } = render(<PortfolioDashboardPage portfolioId="PORT-10001" />);
+
+    const firstChart = await screen.findByRole("img", { name: /performance history/i });
+    expect(firstChart.querySelectorAll("polyline").length).toBe(2);
+
+    mockFetchForPortfolio("PORT-10002");
+    rerender(<PortfolioDashboardPage portfolioId="PORT-10002" />);
+
+    expect(await screen.findByText(/not enough history yet/i)).toBeInTheDocument();
+    expect(
+      screen.queryByRole("img", { name: /performance history/i })
+    ).not.toBeInTheDocument();
   });
 });
